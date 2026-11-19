@@ -1,0 +1,2859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    // Landing on the bare homepage goes straight to the full schedule.
+    // Any existing hash (#talk=..., #speakers, ...) is left alone.
+    (function () {
+      if (location.hash) return;
+      history.replaceState(null, '', location.pathname + location.search + '#schedule');
+      window.addEventListener('load', function () {
+        var el = document.getElementById('schedule');
+        if (el) el.scrollIntoView({ behavior: 'instant', block: 'start' });
+        // During the event, carry on to the session that is live (or up next).
+        if (window.ccScrollToNow) window.ccScrollToNow();
+      });
+    })();
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CloudCon Sydney 2026: Australia's Premier Cloud-Native Conference</title>
+  <meta name="description" content="CloudCon Sydney 2026: Two days of cloud-native excellence covering Kubernetes, AI &amp; ML, Platform Engineering, and Security. 9-10 November 2026, ICC Sydney, Darling Harbour." />
+
+  <!-- Favicon: the cloud mark from the logo. The full logo's wordmark is
+       unreadable at tab size, so the icon uses the mark alone. -->
+  <link rel="icon" href="images/favicon.png" type="image/png" sizes="512x512" />
+  <link rel="alternate icon" href="favicon.ico" sizes="any" />
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="CloudCon Sydney 2026" />
+  <meta property="og:description" content="Australia's premier cloud-native conference covering Kubernetes, AI &amp; ML, Platform Engineering and Security. 9-10 Nov 2026 · ICC Sydney" />
+  <meta property="og:image" content="images/cloudcon2026banner.jpeg" />
+  <meta property="og:url" content="https://cloudconsydney.io" />
+  <meta property="og:site_name" content="CloudCon Sydney" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="CloudCon Sydney 2026" />
+  <meta name="twitter:description" content="Australia's premier cloud-native conference. 9–10 Nov 2026 · ICC Sydney" />
+  <meta name="twitter:image" content="images/cloudcon2026banner.jpeg" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* ─── Design Tokens ─────────────────────────────────────────────────── */
+    :root {
+      --bg: #050d1c;
+      --bg-2: #091525;
+      --bg-card: #0d1f36;
+      --blue: #0099cc;
+      --blue-dark: #007aaa;
+      --blue-light: #33bbee;
+      --text: #ffffff;
+      --text-muted: #a0b4cc;
+      --text-dim: #607080;
+      --border: #162840;
+      --font-head: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    /* ─── Reset & Base ──────────────────────────────────────────────────── */
+    html { scroll-behavior: smooth; }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); margin: 0; padding: 0; }
+    h1, h2, h3, h4, h5, h6 { font-family: var(--font-head); margin: 0; }
+    a { text-decoration: none; }
+    img { max-width: 100%; height: auto; }
+
+    /* ─── Layout ────────────────────────────────────────────────────────── */
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .section { padding: 96px 1.5rem; background: var(--bg); }
+    .section-alt { background: var(--bg-2); }
+
+    /* ─── Typography Helpers ────────────────────────────────────────────── */
+    .section-tag {
+      display: inline-block;
+      font-family: var(--font-head);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--blue-light);
+      background: rgba(0,153,204,0.12);
+      border: 1px solid rgba(0,153,204,0.25);
+      padding: 0.3rem 0.85rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: var(--font-head);
+      font-size: clamp(2rem, 4vw, 2.875rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 0.75rem;
+      color: var(--text);
+    }
+    .section-lead {
+      color: var(--text-muted);
+      max-width: 640px;
+      font-size: 1.05rem;
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+    }
+    .accent-line {
+      width: 48px;
+      height: 4px;
+      background: var(--blue);
+      border-radius: 2px;
+      margin: 0.75rem 0 2rem;
+    }
+
+    /* ─── Buttons ───────────────────────────────────────────────────────── */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--blue);
+      color: #fff;
+      font-family: var(--font-head);
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.8rem 2rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      white-space: nowrap;
+    }
+    .btn-primary:hover { background: var(--blue-dark); transform: translateY(-2px); color: #fff; }
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: transparent;
+      color: #fff;
+      font-family: var(--font-head);
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.8rem 2rem;
+      border-radius: 6px;
+      border: 2px solid rgba(255,255,255,0.35);
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s;
+      white-space: nowrap;
+    }
+    .btn-outline:hover { border-color: #fff; transform: translateY(-2px); color: #fff; }
+    .btn-notify {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: transparent;
+      color: var(--blue-light);
+      font-family: var(--font-head);
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.8rem 2rem;
+      border-radius: 6px;
+      border: 2px solid var(--blue);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      white-space: nowrap;
+    }
+    .btn-notify:hover { background: rgba(0,153,204,0.1); transform: translateY(-2px); color: var(--blue-light); }
+    /* CFP is closed for 2026: menu links stay but are struck out, buttons are disabled */
+    a[href="#cfp"] { text-decoration: line-through; }
+    .cfp-closed, .cfp-closed:hover { opacity: 0.55; cursor: not-allowed; transform: none; }
+    .cfp-closed s { text-decoration-thickness: 2px; }
+
+    /* ─── Cards ─────────────────────────────────────────────────────────── */
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; }
+    .card-hover { transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s; }
+    .card-hover:hover { border-color: var(--blue); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,153,204,0.12); }
+
+    /* ─── Reveal Animation ──────────────────────────────────────────────── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ─── Nav ───────────────────────────────────────────────────────────── */
+    .nav-link {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 0.35rem 0.6rem;
+      border-radius: 4px;
+      transition: color 0.2s;
+    }
+    .nav-link:hover, .nav-link.active { color: #fff; }
+
+    /* ─── Countdown ─────────────────────────────────────────────────────── */
+    .cd-box {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      min-width: 72px;
+      text-align: center;
+    }
+    .cd-num {
+      font-family: var(--font-head);
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+    }
+    .cd-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+    }
+
+    /* ─── Speaker Cards ─────────────────────────────────────────────────── */
+    .speaker-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem 1.25rem;
+      text-align: center;
+      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+    .speaker-card:hover { border-color: var(--blue); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,153,204,0.12); }
+    .speaker-card img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--border);
+      margin: 0 auto 1.1rem;
+      display: block;
+      transition: border-color 0.25s;
+    }
+    .speaker-card:hover img { border-color: var(--blue); }
+    .speaker-name { font-family: var(--font-head); font-weight: 700; font-size: 1rem; color: var(--text); margin-bottom: 0.3rem; }
+    .speaker-title { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.25rem; line-height: 1.4; }
+    .speaker-company { font-size: 0.8rem; color: var(--blue-light); font-weight: 600; }
+
+    /* ─── Talk Cards ────────────────────────────────────────────────────── */
+    .talk-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.4rem 1.35rem;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .talk-card:hover { border-color: var(--blue); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,153,204,0.12); }
+    .talk-format {
+      display: inline-block;
+      font-family: var(--font-head);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--blue-light);
+      background: rgba(0,153,204,0.12);
+      border: 1px solid rgba(0,153,204,0.3);
+      border-radius: 999px;
+      padding: 0.25rem 0.7rem;
+      margin-bottom: 0.85rem;
+    }
+    .talk-title { font-family: var(--font-head); font-weight: 700; font-size: 1rem; color: var(--text); line-height: 1.4; margin-bottom: 0.5rem; }
+    a.talk-card, a.speaker-card { display: block; text-decoration: none; color: inherit; }
+    .talk-speakers { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; }
+
+    /* ─── Schedule / Timetable ──────────────────────────────────────────── */
+    .timetable { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .timetable-header {
+      display: grid;
+      grid-template-columns: 130px 1fr 160px;
+      background: var(--blue);
+      color: #fff;
+      font-family: var(--font-head);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .timetable-header > div, .timetable-row > div { padding: 0.75rem 1rem; }
+    .timetable-row {
+      display: grid;
+      grid-template-columns: 130px 1fr 160px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-card);
+      transition: background 0.15s;
+    }
+    .timetable-row:last-child { border-bottom: none; }
+    .timetable-row:hover { background: rgba(0,153,204,0.06); }
+    /* Breaks and the networking lunch share the same recessed row treatment. */
+    .timetable-row.type-break,
+    .timetable-row.type-networking { background: rgba(255,255,255,0.02); }
+    .timetable-row.type-break .session-title-cell,
+    .timetable-row.type-networking .session-title-cell { color: var(--text-dim); font-style: italic; }
+    .timetable-row.type-workshop { border-left: 3px solid var(--blue-light); }
+    .timetable-row.type-networking { border-left: 3px solid #f59e0b; }
+    .session-time { font-size: 0.78rem; color: var(--blue-light); font-weight: 600; font-variant-numeric: tabular-nums; padding-top: 0.85rem; }
+    .session-title-cell { font-size: 0.88rem; font-weight: 500; color: var(--text); line-height: 1.45; }
+    .session-speaker-name { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.3rem; }
+    /* schedule-day */
+    .schedule-day-label { font-family: var(--font-head); color: var(--blue-light); font-size: 0.95rem; font-weight: 600; margin-bottom: 1rem; }
+    .schedule-day-card { margin-top: 2rem; padding: 1.25rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; }
+    .schedule-day-card .schedule-day-label { margin-bottom: 0.4rem; }
+    .schedule-day-card p { color: var(--text-muted); font-size: 0.9rem; margin: 0; }
+    .schedule-day-card a { color: var(--blue-light); }
+    a.timetable-row { color: inherit; text-decoration: none; cursor: pointer; }
+    a.timetable-row.is-talk .session-title-cell { color: var(--text); }
+    a.timetable-row.is-talk:hover .session-title-cell { color: var(--blue-light); }
+    .session-len-inline { display: none; }
+    @media (max-width: 640px) { .session-len-inline { display: inline; } }
+    .session-room { font-size: 0.75rem; color: var(--text-dim); padding-top: 0.85rem; }
+
+    /* ─── Tab Buttons ───────────────────────────────────────────────────── */
+    .tab-btn {
+      padding: 0.6rem 1.5rem;
+      border-radius: 6px;
+      font-family: var(--font-head);
+      font-weight: 600;
+      font-size: 0.875rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .tab-btn:hover:not(.active) { border-color: var(--blue-light); color: var(--blue-light); }
+
+    /* ─── FAQ ───────────────────────────────────────────────────────────── */
+    .faq-item { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 0.75rem; overflow: hidden; }
+    .faq-question {
+      width: 100%;
+      text-align: left;
+      background: var(--bg-card);
+      border: none;
+      color: var(--text);
+      font-family: var(--font-head);
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 1.15rem 1.25rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      transition: background 0.2s;
+    }
+    .faq-question:hover { background: rgba(0,153,204,0.07); }
+    .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.38s ease; }
+    .faq-answer.open { max-height: 500px; }
+    .faq-answer-inner { padding: 0 1.25rem 1.35rem; color: var(--text-muted); font-size: 0.9rem; line-height: 1.75; }
+    .faq-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      font-size: 1.1rem;
+      line-height: 1;
+      flex-shrink: 0;
+      transition: transform 0.3s;
+    }
+    .faq-icon.open { transform: rotate(45deg); }
+
+    /* ─── Sponsor Logos ─────────────────────────────────────────────────── */
+    .sponsor-logo {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 0.5rem;
+      text-decoration: none;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+    .sponsor-logo:hover { border-color: var(--blue); background: rgba(0,153,204,0.07); transform: translateY(-2px); }
+    .sponsor-logo img { object-fit: contain; filter: brightness(1.05) saturate(0.9); transition: filter 0.2s; }
+    .sponsor-logo:hover img { filter: brightness(1.1) saturate(1.1); }
+    /* 2026 sponsor wall: white tiles so every brand's standard full-colour logo reads */
+    .sponsor-tier { margin-bottom: 2.25rem; }
+    .sponsor-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.25rem; }
+    .sponsor-logo.sponsor-tile { background: #fff; border-color: rgba(255,255,255,0.6); min-height: 110px; max-width: 100%; }
+    .sponsor-logo.sponsor-tile:hover { background: #fff; border-color: var(--blue); }
+    .sponsor-logo.sponsor-tile img { filter: none; }
+    .tier-heading {
+      font-family: var(--font-head);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-dim);
+      text-align: center;
+      margin-bottom: 1.25rem;
+    }
+
+    /* ─── Track Cards ───────────────────────────────────────────────────── */
+    .track-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem 1.5rem;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .track-card:hover { border-color: var(--blue); transform: translateY(-4px); }
+    .track-icon { font-size: 2.25rem; margin-bottom: 1rem; display: block; }
+    .track-name { font-family: var(--font-head); font-weight: 700; font-size: 1.05rem; margin-bottom: 0.5rem; color: var(--text); }
+    .track-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.65; }
+
+    /* ─── Workshop Cards ────────────────────────────────────────────────── */
+    .workshop-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem;
+      border-left: 4px solid var(--blue);
+    }
+    .workshop-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--blue-light);
+      background: rgba(0,153,204,0.12);
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      margin-bottom: 0.75rem;
+    }
+    .workshop-slot { margin-top: 2.5rem; }
+    .workshop-slot + .workshop-slot { margin-top: 2.75rem; }
+    .workshop-slot-label {
+      font-family: var(--font-head);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-dim);
+      margin-bottom: 1rem;
+    }
+    .workshop-grid { display: grid; gap: 1.5rem; }
+    .workshop-grid--two { grid-template-columns: 1fr 1fr; }
+    a.workshop-card {
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    a.workshop-card:hover { border-color: var(--blue); transform: translateY(-2px); }
+    .workshop-card .workshop-title {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 1.15rem;
+      line-height: 1.35;
+      color: var(--text);
+      margin: 0 0 0.55rem;
+    }
+    .workshop-card .workshop-speakers {
+      color: var(--blue-light);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      margin-bottom: 0.75rem;
+    }
+    .workshop-card .workshop-desc {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      line-height: 1.75;
+      margin: 0;
+    }
+    .workshop-more {
+      margin-top: auto;
+      padding-top: 1.1rem;
+      font-family: var(--font-head);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--blue-light);
+    }
+    @media (max-width: 767px) {
+      .workshop-grid--two { grid-template-columns: 1fr; }
+    }
+
+    /* ─── Hero specifics ────────────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      background: linear-gradient(to bottom, var(--bg) 0%, var(--bg-2) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding-top: 120px;
+      padding-bottom: 64px;
+    }
+
+    /* ─── Announcements strip ───────────────────────────────────────────── */
+    #announcements {
+      height: 48px;
+      background: #0099cc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #announcements p {
+      color: #fff;
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-align: center;
+      margin: 0;
+    }
+
+    /* ─── Stat numbers ──────────────────────────────────────────────────── */
+    .stat-num {
+      font-size: clamp(3rem, 5vw, 4rem);
+      font-weight: 800;
+      color: #fff;
+      font-family: var(--font-head);
+      line-height: 1;
+    }
+
+    /* ─── Responsive ────────────────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      #secondary-nav { display: none !important; }
+    }
+    @media (max-width: 768px) {
+      #nav-desktop { display: none !important; }
+      #hamburger { display: flex !important; }
+      .section { padding: 64px 1.25rem; }
+      .timetable-header { grid-template-columns: 100px 1fr !important; }
+      .timetable-row { grid-template-columns: 100px 1fr !important; }
+      .timetable-header > div:last-child,
+      .timetable-row > div:last-child { display: none !important; }
+      .section-title { font-size: clamp(1.75rem, 5vw, 2.25rem); }
+    }
+    @media (max-width: 480px) {
+      .cd-box { min-width: 58px; padding: 0.75rem; }
+      .cd-num { font-size: 1.5rem; }
+    }
+
+    /* ─── Animations ────────────────────────────────────────────────────── */
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.75); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       PRIMARY NAV
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <nav id="nav" style="position:fixed; top:0; left:0; right:0; z-index:50; background: rgba(5,13,28,0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);">
+    <div class="container" style="display:flex; align-items:center; justify-content:space-between; height:76px;">
+
+      <!-- Logo -->
+      <a href="#hero" style="display:flex; align-items:center; gap:0.65rem; text-decoration:none; flex-shrink:0;">
+        <img src="images/cloudcon_logo.png" alt="CloudCon Logo" style="height:52px; width:auto;" />
+        <span style="font-family: var(--font-head); font-weight:700; font-size:1.05rem; color:#fff; letter-spacing:-0.01em;">CloudCon Sydney</span>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <div id="nav-desktop" style="display:flex; align-items:center; gap:0.25rem;">
+        <a href="#about" class="nav-link">About</a>
+        <a href="#speakers" class="nav-link">Speakers</a>
+        <a href="#sessions" class="nav-link">Sessions</a>
+        <a href="#schedule" class="nav-link">Schedule</a>
+        <a href="#sponsors" class="nav-link">Sponsors</a>
+        <a href="#venue" class="nav-link">Venue</a>
+        <a href="#cfp" class="nav-link">CFP</a>
+        <a href="#faq" class="nav-link">FAQ</a>
+        <a href="javascript:void(0)" onclick="openRegister()" class="btn-primary" style="margin-left:1rem; font-size:0.85rem; padding:0.5rem 1.1rem;">Register Now →</a>
+      </div>
+
+      <!-- Hamburger (mobile only, hidden by default) -->
+      <button id="hamburger" aria-label="Open menu" style="display:none; align-items:center; justify-content:center; background:transparent; border:1px solid var(--border); border-radius:6px; padding:0.45rem; cursor:pointer;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a0b4cc" stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       SECONDARY NAV BAR
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <div id="secondary-nav" style="position:fixed; top:77px; left:0; right:0; z-index:49; background: rgba(4,9,15,0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); height:40px; display:flex; align-items:center; justify-content:center; gap:0.75rem;">
+    <span style="display:inline-flex; align-items:center; gap:0.4rem; font-family:var(--font-head); font-size:0.75rem; font-weight:600; color:var(--text-muted); background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:999px; padding:0.2rem 0.85rem;">
+      📅 9–10 Nov 2026
+    </span>
+    <span style="display:inline-flex; align-items:center; gap:0.4rem; font-family:var(--font-head); font-size:0.75rem; font-weight:600; color:var(--text-muted); background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:999px; padding:0.2rem 0.85rem;">
+      📍 ICC Sydney
+    </span>
+    <span style="display:inline-flex; align-items:center; gap:0.4rem; font-family:var(--font-head); font-size:0.75rem; font-weight:600; color:var(--text-muted); background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:999px; padding:0.2rem 0.85rem;">
+      🎤 21 Speakers
+    </span>
+    <span style="display:inline-flex; align-items:center; gap:0.4rem; font-family:var(--font-head); font-size:0.75rem; font-weight:600; color:var(--text-muted); background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:999px; padding:0.2rem 0.85rem;">
+      🗂 Single Track
+    </span>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       BANNER IMAGE
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <div style="padding-top: 108px; background: var(--bg);">
+    <img src="images/cloudcon2026banner.jpeg" alt="CloudCon Sydney 2026 — 9 &amp; 10 November" style="width:100%; display:block; max-height:420px; object-fit:cover; object-position:center;" />
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       STICKY REGISTER CTA BAR (bottom)
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <div id="sticky-cta" style="position:fixed; bottom:0; left:0; right:0; z-index:40; display:none; background: rgba(4,9,15,0.97); border-top:1px solid var(--border); padding:0.75rem 1.5rem;">
+    <div class="container" style="display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;">
+      <p style="margin:0; font-family:var(--font-head); font-size:0.875rem; color:var(--text-muted);">
+        CloudCon Sydney  &nbsp;·&nbsp; 9–10 Nov 2026  &nbsp;·&nbsp; ICC Sydney
+      </p>
+      <div style="display:flex; gap:0.75rem; align-items:center;">
+        <a href="javascript:void(0)" onclick="openRegister()" class="btn-primary" style="font-size:0.8rem; padding:0.5rem 1rem;">Register Now →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       MOBILE MENU OVERLAY
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <div id="mobile-menu" style="display:none; position:fixed; inset:0; z-index:100; background: var(--bg); flex-direction:column; padding:1.5rem;" aria-modal="true" role="dialog">
+    <!-- Header row -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:2.5rem;">
+      <a href="#hero" style="display:flex; align-items:center; gap:0.65rem;" onclick="closeMobileMenu()">
+        <img src="images/cloudcon_logo.png" alt="CloudCon Logo" style="height:32px; width:auto;" />
+        <span style="font-family:var(--font-head); font-weight:700; font-size:1rem; color:#fff;">CloudCon Sydney</span>
+      </a>
+      <button aria-label="Close menu" onclick="closeMobileMenu()" style="background:transparent; border:1px solid var(--border); border-radius:6px; padding:0.45rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a0b4cc" stroke-width="2" stroke-linecap="round">
+          <line x1="4" y1="4" x2="20" y2="20"/>
+          <line x1="20" y1="4" x2="4" y2="20"/>
+        </svg>
+      </button>
+    </div>
+    <!-- Nav links -->
+    <nav style="display:flex; flex-direction:column; gap:0.25rem; flex:1;">
+      <a href="#hero" class="nav-link" style="font-size:1.15rem; font-weight:600; color:#fff; padding:0.75rem 0.5rem; border-bottom:1px solid var(--border);" onclick="closeMobileMenu()">Home</a>
+      <a href="#about" class="nav-link" style="font-size:1.15rem; font-weight:600; padding:0.75rem 0.5rem; border-bottom:1px solid var(--border);" onclick="closeMobileMenu()">About</a>
+      <a href="#speakers" class="nav-link" style="font-size:1.15rem; font-weight:600; padding:0.75rem 0.5rem; border-bottom:1px solid var(--border);" onclick="closeMobileMenu()">Speakers</a>
+      <a href="#sessions" class="nav-link" style="font-size:1.15rem; font-weight:600; padding:0.75rem 0.5rem; border-bottom:1px solid var(--border);" onclick="closeMobileMenu()">Sessions</a>
+      <a href="#schedule" class="nav-link" style="font-size:1.15rem; font-weight:600; padding:0.75rem 0.5rem; border-bottom:1px solid var(--border);" onclick="closeMobileMenu()">Schedule</a>
+      <a href="#sponsors" class="nav-link" style="font-size:1.15rem; font-weight:600; padding:0.75rem 0.5rem; border-bottom:1px solid var(--border);" onclick="closeMobileMenu()">Sponsors</a>
+      <a href="#venue" class="nav-link" style="font-size:1.15rem; font-weight:600; padding:0.75rem 0.5rem; border-bottom:1px solid var(--border);" onclick="closeMobileMenu()">Venue</a>
+      <a href="#cfp" class="nav-link" style="font-size:1.15rem; font-weight:600; padding:0.75rem 0.5rem; border-bottom:1px solid var(--border);" onclick="closeMobileMenu()">CFP</a>
+      <a href="#faq" class="nav-link" style="font-size:1.15rem; font-weight:600; padding:0.75rem 0.5rem;" onclick="closeMobileMenu()">FAQ</a>
+    </nav>
+    <!-- CTA -->
+    <div style="margin-top:2rem; display:flex; flex-direction:column; gap:0.75rem;">
+      <a href="javascript:void(0)" onclick="closeMobileMenu(); openRegister();" class="btn-primary" style="width:100%; justify-content:center; padding:0.9rem 2rem; font-size:1rem;">Register Now →</a>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       HERO SECTION
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <section id="hero">
+    <div style="max-width:900px; margin:0 auto; padding:0 1.5rem; display:flex; flex-direction:column; align-items:center; gap:1.5rem;">
+
+      <!-- Badge -->
+      <div class="section-tag" style="margin-bottom:0;">
+        ☁ KCD Sydney &nbsp;·&nbsp; CNCF Community Event
+      </div>
+
+      <!-- H1 -->
+      <h1 style="font-size:clamp(3.25rem,7vw,6.5rem); font-weight:800; letter-spacing:-0.02em; color:#fff; line-height:1.05; text-align:center;">
+        CloudCon Sydney 2026
+      </h1>
+
+      <!-- Tagline -->
+      <p style="font-size:clamp(1rem,2.2vw,1.25rem); color:var(--text-muted); max-width:680px; line-height:1.7; text-align:center; margin:0;">
+        Australia's premier cloud-native conference covering Kubernetes, AI &amp; ML, Platform Engineering and Security
+      </p>
+
+      <!-- Date / Location row -->
+      <p style="display:flex; flex-wrap:wrap; justify-content:center; gap:1.25rem; margin:0; font-family:var(--font-head); font-size:0.95rem; color:var(--text-muted);">
+        <span>📅 9–10 November 2026</span>
+        <span style="color:var(--border);">|</span>
+        <span>📍 ICC Sydney, Darling Harbour</span>
+      </p>
+
+      <!-- Countdown timer -->
+      <div id="countdown" style="display:flex; gap:0.75rem; flex-wrap:wrap; justify-content:center; margin:0.5rem 0;">
+        <div class="cd-box">
+          <div class="cd-num" id="cd-days">--</div>
+          <div class="cd-label">Days</div>
+        </div>
+        <div class="cd-box">
+          <div class="cd-num" id="cd-hours">--</div>
+          <div class="cd-label">Hours</div>
+        </div>
+        <div class="cd-box">
+          <div class="cd-num" id="cd-mins">--</div>
+          <div class="cd-label">Mins</div>
+        </div>
+        <div class="cd-box">
+          <div class="cd-num" id="cd-secs">--</div>
+          <div class="cd-label">Secs</div>
+        </div>
+      </div>
+      <p id="countdown-message" style="display:none; color:var(--blue-light); font-family:var(--font-head); font-weight:600; font-size:1rem; margin:0;">
+        CloudCon Sydney 2026 has concluded. Thank you to all our speakers, sponsors, and attendees!
+      </p>
+
+      <!-- CTA Buttons -->
+      <div style="display:flex; flex-wrap:wrap; gap:1rem; justify-content:center; margin-top:0.5rem;">
+        <a href="javascript:void(0)" onclick="openRegister()" class="btn-primary" style="font-size:1rem; padding:0.9rem 2.25rem;">
+          Register Now →
+        </a>
+      </div>
+
+      <!-- Scan to register -->
+      <div style="display:flex; align-items:center; gap:0.85rem; margin-top:0.5rem;">
+        <img src="images/registration_qr.png" alt="QR code to register for CloudCon 2026" style="width:84px; height:84px; border-radius:8px; border:1px solid var(--border); background:#fff; padding:4px;" />
+        <span style="color:var(--text-muted); font-size:0.85rem; max-width:150px; line-height:1.4;">Scan to register on your phone</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       ANNOUNCEMENTS STRIP
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <div id="announcements">
+    <p>🎉&nbsp;&nbsp;Registration is open. Secure your spot at CloudCon Sydney 2026 · 9-10 November · ICC Sydney</p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       STATS BANNER
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <div id="stats" style="background:#04090f; padding:64px 1.5rem;">
+    <div class="container">
+      <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:2rem;" class="stats-grid">
+        <!-- Speakers -->
+        <div style="text-align:center; padding:1.5rem 1rem;">
+          <div class="stat-num" data-target="21" data-suffix="">21</div>
+          <div style="font-family:var(--font-head); font-size:0.8rem; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:var(--text-muted); margin-top:0.5rem;">Speakers</div>
+        </div>
+        <!-- Talks -->
+        <div style="text-align:center; padding:1.5rem 1rem;">
+          <div class="stat-num" data-target="17" data-suffix="">17</div>
+          <div style="font-family:var(--font-head); font-size:0.8rem; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:var(--text-muted); margin-top:0.5rem;">Talks</div>
+        </div>
+        <!-- Hands on workshops -->
+        <div style="text-align:center; padding:1.5rem 1rem;">
+          <div class="stat-num" data-target="3" data-suffix="">3</div>
+          <div style="font-family:var(--font-head); font-size:0.8rem; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:var(--text-muted); margin-top:0.5rem;">Hands on Workshops</div>
+        </div>
+        <!-- Days -->
+        <div style="text-align:center; padding:1.5rem 1rem;">
+          <div class="stat-num" data-target="2" data-suffix="">2</div>
+          <div style="font-family:var(--font-head); font-size:0.8rem; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:var(--text-muted); margin-top:0.5rem;">Days</div>
+        </div>
+        <!-- Track -->
+        <div style="text-align:center; padding:1.5rem 1rem;">
+          <div class="stat-num" data-target="1" data-suffix="">1</div>
+          <div style="font-family:var(--font-head); font-size:0.8rem; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:var(--text-muted); margin-top:0.5rem;">Track</div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       WHY ATTEND SECTION
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <section id="why-attend" class="section reveal">
+    <div class="container">
+
+      <!-- Header -->
+      <div style="text-align:center; margin-bottom:3.5rem;">
+        <div class="section-tag">WHY ATTEND</div>
+        <h2 class="section-title">Why CloudCon Sydney?</h2>
+        <div class="accent-line" style="margin:0.75rem auto 0;"></div>
+        <p class="section-lead" style="margin:1.5rem auto 0;">
+          Two days of practitioner-led sessions, hands-on workshops, and community networking at one of Australia's finest venues.
+        </p>
+      </div>
+
+      <!-- 4 Value-Prop Cards: 2×2 on desktop, 1-col on mobile -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem;">
+
+        <!-- Card 1: Real-World Talks -->
+        <div class="card card-hover" style="padding:2rem 1.75rem;">
+          <div style="font-size:2.5rem; margin-bottom:1.1rem;">🎤</div>
+          <h3 style="font-family:var(--font-head); font-size:1.15rem; font-weight:700; color:var(--text); margin-bottom:0.65rem;">Real-World Talks</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.75; margin:0;">
+            Practitioners sharing what works in production, not vendor pitches. 21 speakers on a single track, so you never have to choose.
+          </p>
+        </div>
+
+        <!-- Card 2: Hands-On Workshops -->
+        <div class="card card-hover" style="padding:2rem 1.75rem;">
+          <div style="font-size:2.5rem; margin-bottom:1.1rem;">🔧</div>
+          <h3 style="font-family:var(--font-head); font-size:1.15rem; font-weight:700; color:var(--text); margin-bottom:0.65rem;">Hands-On Workshops</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.75; margin:0;">
+            
+            Day 1 gives you hands-on learning in key areas, with two parallel deep-dive workshops in the morning and a third in the afternoon.
+          </p>
+        </div>
+
+        <!-- Card 3: Community Network -->
+        <div class="card card-hover" style="padding:2rem 1.75rem;">
+          <div style="font-size:2.5rem; margin-bottom:1.1rem;">🤝</div>
+          <h3 style="font-family:var(--font-head); font-size:1.15rem; font-weight:700; color:var(--text); margin-bottom:0.65rem;">Community Network</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.75; margin:0;">
+            Connect with 200+ engineers, architects, and leaders from across Australia and the Asia-Pacific region.
+          </p>
+        </div>
+
+        <!-- Card 4: Expert Speakers -->
+        <div class="card card-hover" style="padding:2rem 1.75rem;">
+          <div style="font-size:2.5rem; margin-bottom:1.1rem;">🏆</div>
+          <h3 style="font-family:var(--font-head); font-size:1.15rem; font-weight:700; color:var(--text); margin-bottom:0.65rem;">Expert Speakers</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.75; margin:0;">
+            Hear from engineers at AWS, Microsoft, Google, SEEK, Mitti, CyberCX, and more.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- mobile menu helper referenced by inline onclick attributes -->
+  <script>
+    function closeMobileMenu() {
+      var m = document.getElementById('mobile-menu');
+      if (m) { m.classList.remove('open'); m.style.display = 'none'; }
+      var io = document.getElementById('icon-open');
+      var ic = document.getElementById('icon-close');
+      if (io) io.style.display = 'block';
+      if (ic) ic.style.display = 'none';
+    }
+
+  </script>
+
+<!-- PART1_END -->
+<!-- SECTION 1: About -->
+<section id="about" class="section section-alt reveal" style="padding-top: 112px;">
+  <div class="container">
+    <div class="section-tag">ABOUT</div>
+    <h2 class="section-title">About CloudCon Sydney</h2>
+    <div class="accent-line"></div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 2.5rem;">
+      <div>
+        <p style="color: var(--text-muted); line-height: 1.85; margin-bottom: 1.25rem;">
+          CloudCon Sydney 2026 is organised by KCD Sydney Incorporated, the local chapter of the global Kubernetes Community Days program backed by the CNCF. It brings together over 200 cloud-native practitioners from across Australia and Asia-Pacific for two days of real-world talks, hands-on workshops, and community networking at ICC Sydney.
+        </p>
+        <p style="color: var(--text-muted); line-height: 1.85;">
+          Our program is community-driven and practitioner-focused. Expect frank conversations about what's working and what isn't in production cloud-native environments today.
+        </p>
+      </div>
+      <div>
+        <h3 style="font-family: var(--font-head); font-weight: 700; font-size: 1.1rem; margin-bottom: 1.25rem; color: var(--text);">Who attends?</h3>
+        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem;">
+          <li style="color: var(--text-muted); line-height: 1.7;">→ Software, Platform, DevOps &amp; SRE Engineers</li>
+          <li style="color: var(--text-muted); line-height: 1.7;">→ Cloud &amp; Solutions Architects</li>
+          <li style="color: var(--text-muted); line-height: 1.7;">→ Technical Leaders &amp; Engineering Managers</li>
+          <li style="color: var(--text-muted); line-height: 1.7;">→ Security Professionals &amp; Cloud Security Specialists</li>
+          <li style="color: var(--text-muted); line-height: 1.7;">→ AI/ML Engineers &amp; Data Scientists</li>
+          <li style="color: var(--text-muted); line-height: 1.7;">→ Founders, CTOs &amp; Strategic Decision-Makers</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <style>
+    @media (max-width: 767px) {
+      #about .container > div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
+</section>
+
+<!-- SECTION 2: Who Attends -->
+<section id="who-attends" class="section reveal">
+  <div class="container">
+    <div class="section-tag">AUDIENCE</div>
+    <h2 class="section-title">Built for Cloud-Native Practitioners</h2>
+    <div class="accent-line"></div>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2.5rem;">
+      <div class="card card-hover" style="padding: 1.75rem;">
+        <div style="font-size: 2.25rem; margin-bottom: 1rem;">⚙️</div>
+        <div style="font-family: var(--font-head); font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text);">Engineers &amp; SREs</div>
+        <p style="color: var(--text-muted); font-size: 0.875rem; line-height: 1.7; margin: 0;">Software engineers, platform engineers, SREs, and DevOps practitioners building and operating cloud-native infrastructure. Come for the deep technical sessions and hands-on workshops.</p>
+      </div>
+      <div class="card card-hover" style="padding: 1.75rem;">
+        <div style="font-size: 2.25rem; margin-bottom: 1rem;">🏛️</div>
+        <div style="font-family: var(--font-head); font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text);">Architects &amp; Leads</div>
+        <p style="color: var(--text-muted); font-size: 0.875rem; line-height: 1.7; margin: 0;">Cloud architects, solutions engineers, and technical leads designing scalable cloud-native platforms. Gain architectural patterns and best practices from practitioners across the industry.</p>
+      </div>
+      <div class="card card-hover" style="padding: 1.75rem;">
+        <div style="font-size: 2.25rem; margin-bottom: 1rem;">🔐</div>
+        <div style="font-family: var(--font-head); font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text);">Security &amp; AI/ML Pros</div>
+        <p style="color: var(--text-muted); font-size: 0.875rem; line-height: 1.7; margin: 0;">Security engineers, AI/ML practitioners, and data scientists applying cloud-native technologies. Explore security patterns, LLM deployment on Kubernetes, and MLOps best practices.</p>
+      </div>
+    </div>
+  </div>
+  <style>
+    @media (max-width: 767px) {
+      #who-attends .container > div[style*="grid-template-columns: repeat(3, 1fr)"] {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
+</section>
+
+<!-- SECTION 3: Workshops -->
+<section id="workshops" class="section section-alt reveal">
+  <div class="container">
+    <div class="section-tag">HANDS-ON</div>
+    <h2 class="section-title">Pre-Conference Workshops</h2>
+    <p class="section-lead">Day 1: Monday 9 November 2026 at ICC Sydney. Three hands-on workshops across two rooms: two in the morning, one in the afternoon. Bring your own laptop.</p>
+
+    <div class="workshop-slot">
+      <div class="workshop-slot-label">Morning &middot; 9:30 am &ndash; 12:00 pm &middot; Two parallel workshops</div>
+      <div class="workshop-grid workshop-grid--two">
+
+        <a class="workshop-card" href="abstracts/2026/AWSWorkshopGenAI/">
+          <div class="workshop-tag">AWS &middot; Cockle Bay Room 1</div>
+          <h3 class="workshop-title">Hosting and Scaling GenAI Workloads on Amazon EKS</h3>
+          <div class="workshop-speakers">Frank Fan, Sheng Chen, Navya Srivastava &amp; Parikshit Patel, AWS</div>
+          <p class="workshop-desc">Deploy, serve, and scale GenAI models on Amazon EKS with NVIDIA GPUs: GPU cluster setup, model serving with vLLM, observability, and scaling with Ray Serve or KV cache offloading.</p>
+          <span class="workshop-more">Workshop details &rarr;</span>
+        </a>
+
+        <a class="workshop-card" href="abstracts/2026/CommvaultWorkshop/">
+          <div class="workshop-tag">Commvault &middot; Cockle Bay Room 2</div>
+          <h3 class="workshop-title">Race to Recover: Mission Earth</h3>
+          <div class="workshop-speakers">Tirslen Pather &amp; Steve Ng, Commvault</div>
+          <p class="workshop-desc">A team-based, Capture the Flag-style workshop: an AI-driven adversary has compromised Mission Earth's cloud application. Investigate, contain, and use Clumio to recover the data without undoing valid changes.</p>
+          <span class="workshop-more">Workshop details &rarr;</span>
+        </a>
+
+      </div>
+    </div>
+
+    <div class="workshop-slot">
+      <div class="workshop-slot-label">Afternoon &middot; 1:30 pm &ndash; 4:00 pm</div>
+
+      <a class="workshop-card" href="abstracts/2026/ChainguardWorkshop/">
+        <div class="workshop-tag">Chainguard &middot; Cockle Bay Room</div>
+        <h3 class="workshop-title">Break It, Fix It: Hands-On Container and Library Supply Chain Security</h3>
+        <div class="workshop-speakers">Facilitated by Andrew Dean, Solutions Architect, Chainguard</div>
+        <p class="workshop-desc">Scan a Kubernetes stack, count the CVEs, then fix them: move third-party and custom images to hardened bases, migrate to a malware-free library endpoint, exploit and remediate a vulnerable library, and enforce image signing. Each attendee gets a dedicated VM/K8s cluster.</p>
+        <span class="workshop-more">Workshop details &rarr;</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4: Focus Areas -->
+<section id="tracks" class="section reveal">
+  <div class="container">
+    <div class="section-tag">PROGRAM</div>
+    <h2 class="section-title">Conference Focus Areas</h2>
+    <div class="accent-line"></div>
+    <p class="section-lead">Five areas covering the full spectrum of cloud-native technology.</p>
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.25rem; margin-top: 2.5rem;">
+      <div class="track-card">
+        <div class="track-icon">⎈</div>
+        <div class="track-name">Kubernetes</div>
+        <div class="track-desc">Cluster operations, release cycles, GitOps, scaling patterns, and Kubernetes-native tooling in production.</div>
+      </div>
+      <div class="track-card">
+        <div class="track-icon">🤖</div>
+        <div class="track-name">AI &amp; ML</div>
+        <div class="track-desc">AI agents on Kubernetes, LLM inference, MLOps, agentic platforms, and GenAI observability.</div>
+      </div>
+      <div class="track-card">
+        <div class="track-icon">🏗️</div>
+        <div class="track-name">Platform Engineering</div>
+        <div class="track-desc">Internal developer platforms, golden paths, developer experience, and platform-as-a-product thinking.</div>
+      </div>
+      <div class="track-card">
+        <div class="track-icon">🔒</div>
+        <div class="track-name">Security</div>
+        <div class="track-desc">Cloud security, supply chain security, policy-as-code, compliance frameworks, and threat detection.</div>
+      </div>
+      <div class="track-card">
+        <div class="track-icon">💡</div>
+        <div class="track-name">Other</div>
+        <div class="track-desc">Cloud cost optimisation, observability platforms, cryptography, and cross-cutting cloud-native topics.</div>
+      </div>
+    </div>
+  </div>
+  <style>
+    @media (max-width: 1024px) {
+      #tracks .container > div[style*="repeat(5, 1fr)"] {
+        grid-template-columns: repeat(3, 1fr) !important;
+      }
+    }
+    @media (max-width: 640px) {
+      #tracks .container > div[style*="repeat(5, 1fr)"],
+      #tracks .container > div[style*="repeat(3, 1fr)"] {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+    }
+    @media (max-width: 400px) {
+      #tracks .container > div {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
+</section>
+
+<!-- SECTION 5: Speakers -->
+<section id="speakers" class="section section-alt reveal">
+  <div class="container">
+    <div class="section-tag">SPEAKERS</div>
+    <h2 class="section-title">Confirmed Speakers</h2>
+    <div class="accent-line"></div>
+    <p class="section-lead">21 speakers across 17 talks at CloudCon Sydney 2026.</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 1.25rem; margin-top: 2.5rem;">
+
+      <a class="speaker-card" href="abstracts/2026/AdamCassarDanielDAlessandro/" data-talk="the-bot-might-be-your-customer">
+        <img src="images/speakers/headshots/AdamCassar.png" alt="Adam Cassar" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Adam Cassar</div>
+        <div class="speaker-title">Co-Founder &amp; Head of Security Engineering</div>
+        <div class="speaker-company">Peakhour.io</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/AlexEze/" data-talk="operators-as-data-why-lifecycle">
+        <img src="images/speakers/headshots/AlexEze.png" alt="Alex Eze" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Alex Eze</div>
+        <div class="speaker-title">Infrastructure Developer</div>
+        <div class="speaker-company">NHS</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/AndrewJeffree/" data-talk="argocd-16-000-apps">
+        <img src="images/speakers/headshots/AndrewJeffree.png" alt="Andrew Jeffree" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Andrew Jeffree</div>
+        <div class="speaker-title">Senior Staff Engineer</div>
+        <div class="speaker-company">Mitti</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/AnupamPhoghat/" data-talk="the-telemetry-trap-building-meaningful-open">
+        <img src="images/speakers/headshots/AnupamPhoghat.png" alt="Anupam Phoghat" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Anupam Phoghat</div>
+        <div class="speaker-title">Principal</div>
+        <div class="speaker-company">Core-X</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/CharlotteFleming/" data-talk="ai-and-platform-maturity-the-foundations">
+        <img src="images/speakers/headshots/CharlotteFleming.png" alt="Charlotte Fleming" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Charlotte Fleming</div>
+        <div class="speaker-title">Researcher, Developer Relations</div>
+        <div class="speaker-company">Octopus Deploy</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/AdamCassarDanielDAlessandro/" data-talk="the-bot-might-be-your-customer">
+        <img src="images/speakers/headshots/DanielDAlessandro.png" alt="Daniel D'Alessandro" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Daniel D'Alessandro</div>
+        <div class="speaker-title">Co-Founder &amp; Head of Performance and Delivery</div>
+        <div class="speaker-company">Peakhour.io</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/ShengChenFrankFan/" data-talk="building-hybrid-ai-systems-edge">
+        <img src="images/speakers/headshots/FrankFan.png" alt="Frank Fan" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Frank Fan</div>
+        <div class="speaker-title">Principal Container Solution Architect</div>
+        <div class="speaker-company">AWS</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/TatianaSelezneva/" data-talk="how-kubernetes-gets-released-a-contributor-s">
+        <img src="images/speakers/headshots/TatianaSelezneva.png" alt="Tatiana Selezneva" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Tatiana Selezneva</div>
+        <div class="speaker-title">Engineering Manager</div>
+        <div class="speaker-company">REA Group</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/GajanKugamoorthy/" data-talk="provenance-for-ai-agent-skills">
+        <img src="images/speakers/headshots/GajanKugamoorthy.png" alt="Gajan Kugamoorthy" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Gajan Kugamoorthy</div>
+        <div class="speaker-title">Senior Consultant</div>
+        <div class="speaker-company">Vivanti</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/JacobTaylorVasiliosSyrakis/" data-talk="i-m-behind-seven-proxies-demystifying">
+        <img src="images/speakers/headshots/JacobTaylor.png" alt="Jacob Taylor" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Jacob Taylor</div>
+        <div class="speaker-title">Staff Engineer</div>
+        <div class="speaker-company">Canva</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/LizFongJones/" data-talk="building-a-serverless-airplane-tracker">
+        <img src="images/speakers/headshots/LizFongJones.png" alt="Liz Fong-Jones" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Liz Fong-Jones</div>
+        <div class="speaker-title">Technical Fellow</div>
+        <div class="speaker-company">Honeycomb.io</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/MichaelFornaroSamiAlakus/" data-talk="streaming-under-fire">
+        <img src="images/speakers/headshots/MichaelFornaro.png" alt="Michael Fornaro" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Michael Fornaro</div>
+        <div class="speaker-title">Staff DevOps Engineer</div>
+        <div class="speaker-company">Easygo</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/MitsuhiroShibuya/" data-talk="when-your-circuit-breaker-backfires-outlier">
+        <img src="images/speakers/headshots/MitsuhiroShibuya.png" alt="Mitsuhiro Shibuya" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Mitsuhiro Shibuya</div>
+        <div class="speaker-title">Site Reliability Engineer</div>
+        <div class="speaker-company">Mercari</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/OlgaMirensky/" data-talk="who-s-stealing-my-cpu-catching">
+        <img src="images/speakers/headshots/OlgaMirensky.png" alt="Olga Mirensky" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Olga Mirensky</div>
+        <div class="speaker-title">Senior Staff Site Reliability Engineer</div>
+        <div class="speaker-company">Ping Identity</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/OsamaOkunbo/" data-talk="the-day-i-found-out">
+        <img src="images/speakers/headshots/OsamaOkunbo.png" alt="Osama Okunbo" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Osama Okunbo</div>
+        <div class="speaker-title">Security Engineer</div>
+        <div class="speaker-company">Immibuddy</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/MichaelFornaroSamiAlakus/" data-talk="streaming-under-fire">
+        <img src="images/speakers/headshots/SamiAlakus.png" alt="Sami Alakus" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Sami Alakus</div>
+        <div class="speaker-title">Engineering Manager</div>
+        <div class="speaker-company">Easygo</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/SaurabhMishra/" data-talk="platform-patterns-for-ai-on-k8s">
+        <img src="images/speakers/headshots/SaurabhMishra.png" alt="Saurabh Mishra" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Saurabh Mishra</div>
+        <div class="speaker-title">Lead Consultant</div>
+        <div class="speaker-company">Vodafone</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/ShengChenFrankFan/" data-talk="building-hybrid-ai-systems-edge">
+        <img src="images/speakers/headshots/ShengChen.png" alt="Sheng Chen" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Sheng Chen</div>
+        <div class="speaker-title">Sr. Solutions Architect</div>
+        <div class="speaker-company">AWS</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/JacobTaylorVasiliosSyrakis/" data-talk="i-m-behind-seven-proxies-demystifying">
+        <img src="images/speakers/headshots/VasiliosSyrakis.png" alt="Vasilios Syrakis" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Vasilios Syrakis</div>
+        <div class="speaker-title">Senior Systems Engineer</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/WendyHa/" data-talk="becoming-a-cncf-contributor">
+        <img src="images/speakers/headshots/WendyHa.png" alt="Wendy Ha" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Wendy Ha</div>
+        <div class="speaker-title">Software Engineer</div>
+        <div class="speaker-company">SEEK</div>
+      </a>
+
+      <a class="speaker-card" href="abstracts/2026/WohShonPhoon/" data-talk="cloud-native-global-load-balancing">
+        <img src="images/speakers/headshots/WohShonPhoon.png" alt="Woh Shon Phoon" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Woh Shon Phoon</div>
+        <div class="speaker-title">Solutions Architect</div>
+        <div class="speaker-company">Nutanix</div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5b: Announced Sessions -->
+<section id="sessions" class="section reveal">
+  <div class="container">
+    <div class="section-tag">PROGRAM</div>
+    <h2 class="section-title">Announced Sessions</h2>
+    <div class="accent-line"></div>
+    <p class="section-lead">17 talks on Tuesday 10 November 2026, all in the Cockle Bay Room. See the <a href="#schedule" style="color:var(--blue-light);">full schedule</a> for times.</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; margin-top: 2.5rem;">
+
+      <a class="talk-card" href="abstracts/2026/LizFongJones/" data-talk="building-a-serverless-airplane-tracker">
+        <div class="talk-format">Lightning · 5 min</div>
+        <div class="talk-title">Building a serverless airplane tracker</div>
+        <div class="talk-speakers">Liz Fong-Jones, Honeycomb.io</div>
+      </a>
+
+      <a class="talk-card" href="abstracts/2026/OlgaMirensky/" data-talk="who-s-stealing-my-cpu-catching">
+        <div class="talk-format">20 min</div>
+        <div class="talk-title">Who's Stealing My CPU? Catching Noisy Neighbours with eBPF on Kubernetes</div>
+        <div class="talk-speakers">Olga Mirensky, Ping Identity</div>
+      </a>
+
+      <a class="talk-card" href="abstracts/2026/MitsuhiroShibuya/" data-talk="when-your-circuit-breaker-backfires-outlier">
+        <div class="talk-format">20 min</div>
+        <div class="talk-title">When your circuit breaker backfires — outlier detection in Istio and Envoy</div>
+        <div class="talk-speakers">Mitsuhiro Shibuya, Mercari</div>
+      </a>
+
+      <a class="talk-card" href="abstracts/2026/CharlotteFleming/" data-talk="ai-and-platform-maturity-the-foundations">
+        <div class="talk-format">Lightning · 5 min</div>
+        <div class="talk-title">AI and platform maturity: the foundations that help AI deliver</div>
+        <div class="talk-speakers">Charlotte Fleming, Octopus Deploy</div>
+      </a>
+
+      <a class="talk-card" href="abstracts/2026/AdamCassarDanielDAlessandro/" data-talk="the-bot-might-be-your-customer">
+        <div class="talk-format">20 min</div>
+        <div class="talk-title">The Bot Might Be Your Customer - Rethinking Traffic Management</div>
+        <div class="talk-speakers">Adam Cassar, Peakhour.io &amp; Daniel D'Alessandro, Peakhour.io</div>
+      </a>
+
+      <a class="talk-card" href="abstracts/2026/JacobTaylorVasiliosSyrakis/" data-talk="i-m-behind-seven-proxies-demystifying">
+        <div class="talk-format">20 min</div>
+        <div class="talk-title">I'm Behind Seven Proxies: Demystifying Envoy on Kubernetes</div>
+        <div class="talk-speakers">Jacob Taylor, Canva &amp; Vasilios Syrakis</div>
+      </a>
+
+      <a class="talk-card" href="abstracts/2026/TatianaSelezneva/" data-talk="how-kubernetes-gets-released-a-contributor-s">
+        <div class="talk-format">20 min</div>
+        <div class="talk-title">How Kubernetes Gets Released: A Contributor’s View from the Release Team</div>
+        <div class="talk-speakers">Tatiana Selezneva, REA Group</div>
+      </a>
+
+      <a class="talk-card" href="abstracts/2026/AnupamPhoghat/" data-talk="the-telemetry-trap-building-meaningful-open">
+        <div class="talk-format">20 min</div>
+        <div class="talk-title">The Telemetry Trap: Building Meaningful Open-Source Observability for Multi-Agent Systems</div>
+        <div class="talk-speakers">Anupam Phoghat, Core-X</div>
+      </a>
+
+      <a class="talk-card" href="abstracts/2026/AlexEze/" data-talk="operators-as-data-why-lifecycle">
+        <div class="talk-format">Lightning · 5 min</div>
+        <div class="talk-title">Operators as Data: Why Lifecycle is Not a Separate Problem</div>
+        <div class="talk-speakers">Alex Eze, NHS</div>
+      </a>
+
+      <a class="talk-card" href="abstracts/2026/OsamaOkunbo/" data-talk="the-day-i-found-out">
+        <div class="talk-format">20 min</div>
+        <div class="talk-title">The Day I Found Out My Policies Were Off</div>
+        <div class="talk-speakers">Osama Okunbo, Immibuddy</div>
+      </a>
+
+      <a class="talk-card" href="abstracts/2026/MichaelFornaroSamiAlakus/" data-talk="streaming-under-fire">
+        <div class="talk-format">20 min</div>
+        <div class="talk-title">Streaming Under Fire</div>
+        <div class="talk-speakers">Michael Fornaro, Easygo &amp; Sami Alakus, Easygo</div>
+      </a>
+
+      <a class="talk-card" href="abstracts/2026/SaurabhMishra/" data-talk="platform-patterns-for-ai-on-k8s">
+        <div class="talk-format">20 min</div>
+        <div class="talk-title">Platform Patterns for AI on K8s: Admission, Isolation &amp; Observability That Work</div>
+        <div class="talk-speakers">Saurabh Mishra, Vodafone</div>
+      </a>
+
+      <a class="talk-card" href="abstracts/2026/AndrewJeffree/" data-talk="argocd-16-000-apps">
+        <div class="talk-format">20 min</div>
+        <div class="talk-title">ArgoCD, 16,000 Apps, One Cluster</div>
+        <div class="talk-speakers">Andrew Jeffree, Mitti</div>
+      </a>
+
+      <a class="talk-card" href="abstracts/2026/WohShonPhoon/" data-talk="cloud-native-global-load-balancing">
+        <div class="talk-format">20 min</div>
+        <div class="talk-title">Cloud Native Global Load Balancing with K8gb</div>
+        <div class="talk-speakers">Woh Shon Phoon, Nutanix</div>
+      </a>
+
+      <a class="talk-card" href="abstracts/2026/WendyHa/" data-talk="becoming-a-cncf-contributor">
+        <div class="talk-format">Lightning · 5 min</div>
+        <div class="talk-title">Becoming a CNCF Contributor with 1 Hour a Week</div>
+        <div class="talk-speakers">Wendy Ha, SEEK</div>
+      </a>
+
+      <a class="talk-card" href="abstracts/2026/GajanKugamoorthy/" data-talk="provenance-for-ai-agent-skills">
+        <div class="talk-format">20 min</div>
+        <div class="talk-title">Provenance for AI Agent Skills</div>
+        <div class="talk-speakers">Gajan Kugamoorthy, Vivanti</div>
+      </a>
+
+      <a class="talk-card" href="abstracts/2026/ShengChenFrankFan/" data-talk="building-hybrid-ai-systems-edge">
+        <div class="talk-format">20 min</div>
+        <div class="talk-title">Building Hybrid AI Systems: Edge Inferencing Meets Cloud Reasoning</div>
+        <div class="talk-speakers">Sheng Chen, AWS &amp; Frank Fan, AWS</div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5c: Past Speakers -->
+<section id="past-speakers" class="section section-alt reveal">
+  <div class="container">
+    <div class="section-tag">ALUMNI</div>
+    <h2 class="section-title">Past Speakers (CloudCon 2025)</h2>
+    <div class="accent-line"></div>
+    <p class="section-lead">Practitioners who shared real-world cloud-native experience at CloudCon Sydney 2025.</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 1.25rem; margin-top: 2.5rem;">
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/AdamCassar.png" alt="Adam Cassar" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Adam Cassar</div>
+        <div class="speaker-title">Co-Founder &amp; Head of Security Engineering</div>
+        <div class="speaker-company">Peakhour.IO</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/AdrianCole.png" alt="Adrian Cole" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Adrian Cole</div>
+        <div class="speaker-title">Principal Engineer</div>
+        <div class="speaker-company">Tetrate</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/AnatolyLitovsky.png" alt="Anatoly Litovsky" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Anatoly Litovsky</div>
+        <div class="speaker-company">Glasswing</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/ArturRajski.png" alt="Artur Rajski" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Artur Rajski</div>
+        <div class="speaker-title">Software Engineer</div>
+        <div class="speaker-company">Zepto</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/AviShua.png" alt="Avi Shua" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Avi Shua</div>
+        <div class="speaker-title">Chief Innovation Officer &amp; Co-Founder</div>
+        <div class="speaker-company">Orca Security</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/BojanZivic.png" alt="Bojan Zivic" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Bojan Zivic</div>
+        <div class="speaker-title">AWS Ambassador</div>
+        <div class="speaker-company">AWS</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/BradMcCoy.png" alt="Brad McCoy" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Brad McCoy</div>
+        <div class="speaker-company">Cuscal</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/CarlosSantana.png" alt="Carlos Santana" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Carlos Santana</div>
+        <div class="speaker-title">Sr. Specialist Solutions Architect</div>
+        <div class="speaker-company">AWS</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/FaisalMasood.png" alt="Faisal Masood" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Faisal Masood</div>
+        <div class="speaker-title">Container Specialist</div>
+        <div class="speaker-company">AWS</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/FrankFan.png" alt="Frank Fan" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Frank Fan</div>
+        <div class="speaker-title">Sr. Container Solutions Architect</div>
+        <div class="speaker-company">AWS</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/GajanKugamoorthy.png" alt="Gajan Kugamoorthy" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Gajan Kugamoorthy</div>
+        <div class="speaker-title">Senior Consultant</div>
+        <div class="speaker-company">Vivanti</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/GeraldBachlmayr.png" alt="Gerald Bachlmayr" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Gerald Bachlmayr</div>
+        <div class="speaker-title">Principal Cloud Architect</div>
+        <div class="speaker-company">Patterned Security</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/HarpreetSingh.png" alt="Harpreet Singh" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Harpreet Singh</div>
+        <div class="speaker-title">Staff Software Engineer</div>
+        <div class="speaker-company">Rokt</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/JamesBannan.png" alt="James Bannan" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">James Bannan</div>
+        <div class="speaker-title">Principal Security Consultant</div>
+        <div class="speaker-company">CyberCX</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/JohnnyMirza.png" alt="Johnny Mirza" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Johnny Mirza</div>
+        <div class="speaker-title">Solution Architect</div>
+        <div class="speaker-company">ClickHouse</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/LeonSeng.png" alt="Leon Seng" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Leon Seng</div>
+        <div class="speaker-title">Solutions Engineer</div>
+        <div class="speaker-company">F5</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/MatthewCasperson.png" alt="Matthew Casperson" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Matthew Casperson</div>
+        <div class="speaker-title">Solutions Engineer</div>
+        <div class="speaker-company">Octopus Deploy</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/MichaelFornaro.png" alt="Michael Fornaro" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Michael Fornaro</div>
+        <div class="speaker-company">Easygo</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/MiguelEliasdosSantos.png" alt="Miguel Elias dos Santos" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Miguel Elias dos Santos</div>
+        <div class="speaker-title">Platform Engineer</div>
+        <div class="speaker-company">SafetyCulture</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/PaulOReilly.png" alt="Paul O'Reilly" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Paul O'Reilly</div>
+        <div class="speaker-title">Technical Expert</div>
+        <div class="speaker-company">Octopus Deploy</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/PraneetChandra.png" alt="Praneet Chandra" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Praneet Chandra</div>
+        <div class="speaker-title">Sr. Director, Cloud Economics</div>
+        <div class="speaker-company">CloudKeeper</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/PrithviRaj.png" alt="Prithvi Raj" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Prithvi Raj</div>
+        <div class="speaker-company">Mirantis</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/RadKanapathipillai.png" alt="Rad Kanapathipillai" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Rad Kanapathipillai</div>
+        <div class="speaker-company">DevOps1</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/SamDwyer.png" alt="Sam Dwyer" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Sam Dwyer</div>
+        <div class="speaker-company">Nine</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/TatsatMishra.png" alt="Tatsat (Tats) Mishra" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Tatsat (Tats) Mishra</div>
+        <div class="speaker-company">Microsoft</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/WendyHa.png" alt="Wendy Ha" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Wendy Ha</div>
+        <div class="speaker-company">SEEK</div>
+      </div>
+
+      <div class="speaker-card">
+        <img src="images/speakers/headshots/WillVelida.png" alt="Will Velida" loading="lazy" onerror="this.src='images/speakers/headshots/placeholder.png'">
+        <div class="speaker-name">Will Velida</div>
+        <div class="speaker-company">Microsoft</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 6: Testimonial -->
+<section id="testimonial" style="background: var(--bg-2); padding: 80px 1.5rem;">
+  <div style="max-width: 800px; margin: 0 auto;">
+    <div style="border-left: 4px solid var(--blue); padding-left: 2rem;">
+      <span style="font-size: 4rem; color: var(--blue); opacity: 0.4; font-family: Georgia; line-height: 0.5; display: block; margin-bottom: 0.5rem;">&ldquo;</span>
+      <p style="font-size: clamp(1.15rem, 2.5vw, 1.5rem); font-style: italic; color: var(--text); line-height: 1.75; margin-bottom: 1.25rem;">CloudCon is exactly what the Australian cloud-native community needed: real engineers sharing real lessons from production, not marketing fluff. I came back with three ideas I could use on Monday morning.</p>
+      <div style="color: var(--blue-light); font-weight: 600; font-family: var(--font-head);">Past Attendee · Platform Engineer, Financial Services</div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 7: Schedule -->
+<section id="schedule" class="section reveal">
+  <div class="container">
+    <div class="section-tag">AGENDA</div>
+    <h2 class="section-title">Full Schedule</h2>
+    <div class="accent-line"></div>
+
+<!-- SCHEDULE START -->
+    <p class="section-lead">Day 1 is workshops day: two parallel hands-on workshops in the morning and one in the afternoon. Day 2 is a single track of talks, all in the Cockle Bay Room, so you never have to choose. Select a session for its abstract and speaker details.</p>
+
+    <div class="schedule-day-label">Day 1 &middot; Monday 9 November 2026</div>
+    <div class="timetable">
+      <div class="timetable-header">
+        <div>Time</div>
+        <div>Session</div>
+        <div>Length</div>
+      </div>
+
+        <a class="timetable-row type-workshop" href="abstracts/2026/AWSWorkshopGenAI/">
+          <div class="session-time">9:30 &ndash; 12:00</div>
+          <div>
+            <div class="session-title-cell">Hosting and Scaling GenAI Workloads on Amazon EKS</div>
+            <div class="session-speaker-name">Frank Fan, Sheng Chen, Navya Srivastava &amp; Parikshit Patel, AWS &middot; Cockle Bay Room 1<span class="session-len-inline"> &middot; 2.5 hours</span></div>
+          </div>
+          <div class="session-room">2.5 hours</div>
+        </a>
+
+        <a class="timetable-row type-workshop" href="abstracts/2026/CommvaultWorkshop/">
+          <div class="session-time">9:30 &ndash; 12:00</div>
+          <div>
+            <div class="session-title-cell">Race to Recover: Mission Earth</div>
+            <div class="session-speaker-name">Tirslen Pather &amp; Steve Ng, Commvault &middot; Cockle Bay Room 2<span class="session-len-inline"> &middot; 2.5 hours</span></div>
+          </div>
+          <div class="session-room">2.5 hours</div>
+        </a>
+
+        <div class="timetable-row type-break">
+          <div class="session-time">12:00 &ndash; 1:30</div>
+          <div><div class="session-title-cell">Break</div></div>
+          <div class="session-room">&ndash;</div>
+        </div>
+
+        <a class="timetable-row type-workshop" href="abstracts/2026/ChainguardWorkshop/">
+          <div class="session-time">1:30 &ndash; 4:00</div>
+          <div>
+            <div class="session-title-cell">Break It, Fix It: Hands-On Container and Library Supply Chain Security</div>
+            <div class="session-speaker-name">Andrew Dean, Chainguard &middot; Cockle Bay Room<span class="session-len-inline"> &middot; 2.5 hours</span></div>
+          </div>
+          <div class="session-room">2.5 hours</div>
+        </a>
+
+        <div class="timetable-row type-networking">
+          <div class="session-time">From 4:15</div>
+          <div>
+            <div class="session-title-cell">Welcome Drinks</div>
+            <div class="session-speaker-name">Planar, Shop C08, Ground Floor, ICC Sydney (downstairs)</div>
+          </div>
+          <div class="session-room">&ndash;</div>
+        </div>
+    </div>
+
+    <div class="schedule-day-label" style="margin-top: 2.25rem;">Day 2 &middot; Tuesday 10 November 2026</div>
+    <div class="timetable">
+      <div class="timetable-header">
+        <div>Time</div>
+        <div>Session</div>
+        <div>Length</div>
+      </div>
+
+        <div class="timetable-row type-break">
+          <div class="session-time">8:30 &ndash; 9:15</div>
+          <div><div class="session-title-cell">Registration</div></div>
+          <div class="session-room">45 min</div>
+        </div>
+
+        <div class="timetable-row">
+          <div class="session-time">9:15 &ndash; 9:40</div>
+          <div>
+            <div class="session-title-cell">Welcome</div>
+            <div class="session-speaker-name">Conference Organisers<span class="session-len-inline"> &middot; 25 min</span></div>
+          </div>
+          <div class="session-room">25 min</div>
+        </div>
+
+        <a class="timetable-row is-talk" href="abstracts/2026/OlgaMirensky/" data-talk="who-s-stealing-my-cpu-catching">
+          <div class="session-time">9:40 &ndash; 10:00</div>
+          <div>
+            <div class="session-title-cell">Who's Stealing My CPU? Catching Noisy Neighbours with eBPF on Kubernetes</div>
+            <div class="session-speaker-name">Olga Mirensky, Ping Identity<span class="session-len-inline"> &middot; 20 min</span></div>
+          </div>
+          <div class="session-room">20 min</div>
+        </a>
+
+        <a class="timetable-row is-talk" href="abstracts/2026/JacobTaylorVasiliosSyrakis/" data-talk="i-m-behind-seven-proxies-demystifying">
+          <div class="session-time">10:00 &ndash; 10:20</div>
+          <div>
+            <div class="session-title-cell">I'm Behind Seven Proxies: Demystifying Envoy on Kubernetes</div>
+            <div class="session-speaker-name">Jacob Taylor, Canva &amp; Vasilios Syrakis<span class="session-len-inline"> &middot; 20 min</span></div>
+          </div>
+          <div class="session-room">20 min</div>
+        </a>
+
+        <a class="timetable-row is-talk" href="abstracts/2026/WohShonPhoon/" data-talk="cloud-native-global-load-balancing">
+          <div class="session-time">10:20 &ndash; 10:40</div>
+          <div>
+            <div class="session-title-cell">Cloud Native Global Load Balancing with K8gb</div>
+            <div class="session-speaker-name">Woh Shon Phoon, Nutanix<span class="session-len-inline"> &middot; 20 min</span></div>
+          </div>
+          <div class="session-room">20 min</div>
+        </a>
+
+        <a class="timetable-row is-talk" href="abstracts/2026/AlexEze/" data-talk="operators-as-data-why-lifecycle">
+          <div class="session-time">10:40 &ndash; 10:45</div>
+          <div>
+            <div class="session-title-cell">Operators as Data: Why Lifecycle is Not a Separate Problem</div>
+            <div class="session-speaker-name">Alex Eze, NHS<span class="session-len-inline"> &middot; Lightning &middot; 5 min</span></div>
+          </div>
+          <div class="session-room">Lightning &middot; 5 min</div>
+        </a>
+
+        <div class="timetable-row type-break">
+          <div class="session-time">10:45 &ndash; 11:15</div>
+          <div><div class="session-title-cell">Morning Tea</div></div>
+          <div class="session-room">30 min</div>
+        </div>
+
+        <a class="timetable-row is-talk" href="abstracts/2026/MichaelFornaroSamiAlakus/" data-talk="streaming-under-fire">
+          <div class="session-time">11:15 &ndash; 11:35</div>
+          <div>
+            <div class="session-title-cell">Streaming Under Fire</div>
+            <div class="session-speaker-name">Michael Fornaro &amp; Sami Alakus, Easygo<span class="session-len-inline"> &middot; 20 min</span></div>
+          </div>
+          <div class="session-room">20 min</div>
+        </a>
+
+        <a class="timetable-row is-talk" href="abstracts/2026/AndrewJeffree/" data-talk="argocd-16-000-apps">
+          <div class="session-time">11:35 &ndash; 11:55</div>
+          <div>
+            <div class="session-title-cell">ArgoCD, 16,000 Apps, One Cluster</div>
+            <div class="session-speaker-name">Andrew Jeffree, Mitti<span class="session-len-inline"> &middot; 20 min</span></div>
+          </div>
+          <div class="session-room">20 min</div>
+        </a>
+
+        <a class="timetable-row is-talk" href="abstracts/2026/AdamCassarDanielDAlessandro/" data-talk="the-bot-might-be-your-customer">
+          <div class="session-time">11:55 &ndash; 12:15</div>
+          <div>
+            <div class="session-title-cell">The Bot Might Be Your Customer - Rethinking Traffic Management</div>
+            <div class="session-speaker-name">Adam Cassar &amp; Daniel D'Alessandro, Peakhour.io<span class="session-len-inline"> &middot; 20 min</span></div>
+          </div>
+          <div class="session-room">20 min</div>
+        </a>
+
+        <a class="timetable-row is-talk" href="abstracts/2026/TatianaSelezneva/" data-talk="how-kubernetes-gets-released-a-contributor-s">
+          <div class="session-time">12:15 &ndash; 12:35</div>
+          <div>
+            <div class="session-title-cell">How Kubernetes Gets Released: A Contributor’s View from the Release Team</div>
+            <div class="session-speaker-name">Tatiana Selezneva, REA Group<span class="session-len-inline"> &middot; 20 min</span></div>
+          </div>
+          <div class="session-room">20 min</div>
+        </a>
+
+        <a class="timetable-row is-talk" href="abstracts/2026/WendyHa/" data-talk="becoming-a-cncf-contributor">
+          <div class="session-time">12:35 &ndash; 12:40</div>
+          <div>
+            <div class="session-title-cell">Becoming a CNCF Contributor with 1 Hour a Week</div>
+            <div class="session-speaker-name">Wendy Ha, SEEK<span class="session-len-inline"> &middot; Lightning &middot; 5 min</span></div>
+          </div>
+          <div class="session-room">Lightning &middot; 5 min</div>
+        </a>
+
+        <div class="timetable-row type-networking">
+          <div class="session-time">12:40 &ndash; 1:25</div>
+          <div><div class="session-title-cell">Networking Lunch</div></div>
+          <div class="session-room">45 min</div>
+        </div>
+
+        <a class="timetable-row is-talk" href="abstracts/2026/SaurabhMishra/" data-talk="platform-patterns-for-ai-on-k8s">
+          <div class="session-time">1:25 &ndash; 1:45</div>
+          <div>
+            <div class="session-title-cell">Platform Patterns for AI on K8s: Admission, Isolation &amp; Observability That Work</div>
+            <div class="session-speaker-name">Saurabh Mishra, Vodafone<span class="session-len-inline"> &middot; 20 min</span></div>
+          </div>
+          <div class="session-room">20 min</div>
+        </a>
+
+        <a class="timetable-row is-talk" href="abstracts/2026/AnupamPhoghat/" data-talk="the-telemetry-trap-building-meaningful-open">
+          <div class="session-time">1:45 &ndash; 2:05</div>
+          <div>
+            <div class="session-title-cell">The Telemetry Trap: Building Meaningful Open-Source Observability for Multi-Agent Systems</div>
+            <div class="session-speaker-name">Anupam Phoghat, Core-X<span class="session-len-inline"> &middot; 20 min</span></div>
+          </div>
+          <div class="session-room">20 min</div>
+        </a>
+
+        <a class="timetable-row is-talk" href="abstracts/2026/CharlotteFleming/" data-talk="ai-and-platform-maturity-the-foundations">
+          <div class="session-time">2:05 &ndash; 2:10</div>
+          <div>
+            <div class="session-title-cell">AI and platform maturity: the foundations that help AI deliver</div>
+            <div class="session-speaker-name">Charlotte Fleming, Octopus Deploy<span class="session-len-inline"> &middot; Lightning &middot; 5 min</span></div>
+          </div>
+          <div class="session-room">Lightning &middot; 5 min</div>
+        </a>
+
+        <a class="timetable-row is-talk" href="abstracts/2026/GajanKugamoorthy/" data-talk="provenance-for-ai-agent-skills">
+          <div class="session-time">2:10 &ndash; 2:30</div>
+          <div>
+            <div class="session-title-cell">Provenance for AI Agent Skills</div>
+            <div class="session-speaker-name">Gajan Kugamoorthy, Vivanti<span class="session-len-inline"> &middot; 20 min</span></div>
+          </div>
+          <div class="session-room">20 min</div>
+        </a>
+
+        <div class="timetable-row type-break">
+          <div class="session-time">2:30 &ndash; 3:15</div>
+          <div><div class="session-title-cell">Afternoon Tea</div></div>
+          <div class="session-room">45 min</div>
+        </div>
+
+        <a class="timetable-row is-talk" href="abstracts/2026/ShengChenFrankFan/" data-talk="building-hybrid-ai-systems-edge">
+          <div class="session-time">3:15 &ndash; 3:35</div>
+          <div>
+            <div class="session-title-cell">Building Hybrid AI Systems: Edge Inferencing Meets Cloud Reasoning</div>
+            <div class="session-speaker-name">Sheng Chen &amp; Frank Fan, AWS<span class="session-len-inline"> &middot; 20 min</span></div>
+          </div>
+          <div class="session-room">20 min</div>
+        </a>
+
+        <a class="timetable-row is-talk" href="abstracts/2026/MitsuhiroShibuya/" data-talk="when-your-circuit-breaker-backfires-outlier">
+          <div class="session-time">3:35 &ndash; 3:55</div>
+          <div>
+            <div class="session-title-cell">When your circuit breaker backfires — outlier detection in Istio and Envoy</div>
+            <div class="session-speaker-name">Mitsuhiro Shibuya, Mercari<span class="session-len-inline"> &middot; 20 min</span></div>
+          </div>
+          <div class="session-room">20 min</div>
+        </a>
+
+        <a class="timetable-row is-talk" href="abstracts/2026/LizFongJones/" data-talk="building-a-serverless-airplane-tracker">
+          <div class="session-time">3:55 &ndash; 4:00</div>
+          <div>
+            <div class="session-title-cell">Building a serverless airplane tracker</div>
+            <div class="session-speaker-name">Liz Fong-Jones, Honeycomb.io<span class="session-len-inline"> &middot; Lightning &middot; 5 min</span></div>
+          </div>
+          <div class="session-room">Lightning &middot; 5 min</div>
+        </a>
+
+        <a class="timetable-row is-talk" href="abstracts/2026/SponsorPanel/" data-talk="ai-writes-the-code-who-checks-it">
+          <div class="session-time">4:00 &ndash; 4:20</div>
+          <div>
+            <div class="session-title-cell">Sponsor Panel</div>
+            <div class="session-speaker-name">Panel: Tirslen Pather, Commvault; Andrew Dean, Chainguard; Woh Shon Phoon, Nutanix<span class="session-len-inline"> &middot; 20 min</span></div>
+          </div>
+          <div class="session-room">Panel &middot; 20 min</div>
+        </a>
+
+        <div class="timetable-row">
+          <div class="session-time">4:20 &ndash; 4:30</div>
+          <div>
+            <div class="session-title-cell">Prizes and Closing</div>
+            <div class="session-speaker-name">Conference Organisers<span class="session-len-inline"> &middot; 10 min</span></div>
+          </div>
+          <div class="session-room">10 min</div>
+        </div>
+
+    </div>
+<!-- SCHEDULE END -->
+  </div>
+</section>
+
+<!-- PART2_END -->
+<!-- ============================================================
+     PART 3 — Highlights · Sponsors · Venue · CFP · FAQ · Footer + JS
+     Agent 3 of 3
+     ============================================================ -->
+
+<!-- ============================================================
+     SECTION: Highlights
+     ============================================================ -->
+<section id="highlights" class="section section-alt reveal">
+  <div class="container">
+    <p class="section-tag">COMMUNITY</p>
+    <h2 class="section-title">See What You Missed</h2>
+    <div class="accent-line"></div>
+    <p class="section-lead" style="text-align:center;">Watch talks and highlights from past KCD Australia events on our YouTube channel.</p>
+
+    <div style="max-width:560px; margin:0 auto;">
+      <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:14px; border:1px solid var(--border);">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/WzoMIP-S2ws" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      </div>
+      <p style="text-align:center; margin-top:1rem;">
+        <a href="https://youtube.com/shorts/WzoMIP-S2ws" target="_blank" rel="noopener noreferrer" style="color:var(--blue-light)">View all talks on YouTube →</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION: Sponsors
+     ============================================================ -->
+<section id="sponsors" class="section reveal">
+  <div class="container">
+    <p class="section-tag">SPONSORS</p>
+    <h2 class="section-title">Our 2026 Sponsors</h2>
+    <div class="accent-line"></div>
+    <p class="section-lead" style="text-align:center; margin-left:auto; margin-right:auto;">CloudCon Sydney 2026 is made possible by these organisations. Thank you for supporting the cloud-native community.</p>
+
+    <div style="margin-top: 2.5rem;">
+
+      <div class="sponsor-tier">
+        <div class="tier-heading">Diamond Sponsor</div>
+        <div class="sponsor-row">
+        <a class="sponsor-logo sponsor-tile" href="https://www.nutanix.com" target="_blank" rel="noopener noreferrer" aria-label="Nutanix" style="width:340px;">
+          <img src="images/sponsors/nutanix.svg" alt="Nutanix" style="height:72px; max-width:100%; width:auto;">
+        </a>
+        </div>
+      </div>
+
+      <div class="sponsor-tier">
+        <div class="tier-heading">Platinum Sponsors</div>
+        <div class="sponsor-row">
+        <a class="sponsor-logo sponsor-tile" href="https://www.chainguard.dev" target="_blank" rel="noopener noreferrer" aria-label="Chainguard" style="width:280px;">
+          <img src="images/sponsors/chainguard.png" alt="Chainguard" style="height:52px; max-width:100%; width:auto;">
+        </a>
+        <a class="sponsor-logo sponsor-tile" href="https://www.clumio.com/" target="_blank" rel="noopener noreferrer" aria-label="Commvault" style="width:280px;">
+          <img src="images/sponsors/commvault.svg" alt="Commvault" style="height:52px; max-width:100%; width:auto;">
+        </a>
+        </div>
+      </div>
+
+      <div class="sponsor-tier">
+        <div class="tier-heading">Gold Sponsors</div>
+        <div class="sponsor-row">
+        <a class="sponsor-logo sponsor-tile" href="https://aws.amazon.com" target="_blank" rel="noopener noreferrer" aria-label="AWS" style="width:280px;">
+          <img src="images/aws_logo.png" alt="AWS" style="height:46px; max-width:100%; width:auto;">
+        </a>
+        <a class="sponsor-logo sponsor-tile" href="https://octopus.com" target="_blank" rel="noopener noreferrer" aria-label="Octopus Deploy" style="width:280px;">
+          <img src="images/sponsors/octopus.svg" alt="Octopus Deploy" style="height:46px; max-width:100%; width:auto;">
+        </a>
+        </div>
+      </div>
+
+      <div class="sponsor-tier">
+        <div class="tier-heading">Silver Sponsors</div>
+        <div class="sponsor-row">
+        <a class="sponsor-logo sponsor-tile" href="https://grafana.com" target="_blank" rel="noopener noreferrer" aria-label="Grafana Labs" style="width:200px;">
+          <img src="images/grafana.png" alt="Grafana Labs" style="height:64px; max-width:100%; width:auto;">
+        </a>
+        <a class="sponsor-logo sponsor-tile" href="https://circumvent.io" target="_blank" rel="noopener noreferrer" aria-label="Circumvent" style="width:200px;">
+          <img src="images/sponsors/circumvent.svg" alt="Circumvent" style="height:38px; max-width:100%; width:auto;">
+        </a>
+        <a class="sponsor-logo sponsor-tile" href="https://www.elastic.co" target="_blank" rel="noopener noreferrer" aria-label="Elastic" style="width:200px;">
+          <img src="images/elastic_logo.png" alt="Elastic" style="height:38px; max-width:100%; width:auto;">
+        </a>
+        </div>
+      </div>
+
+      <div class="sponsor-tier sponsor-row">
+        <div>
+          <div class="tier-heading">Coffee Cart Sponsor</div>
+        <a class="sponsor-logo sponsor-tile" href="https://easygo.io" target="_blank" rel="noopener noreferrer" aria-label="Easygo" style="width:220px;">
+          <img src="images/sponsors/easygo.svg" alt="Easygo" style="height:34px; max-width:100%; width:auto;">
+        </a>
+        </div>
+        <div>
+          <div class="tier-heading">Welcome Reception Sponsor</div>
+        <a class="sponsor-logo sponsor-tile" href="https://odysseycloud.io" target="_blank" rel="noopener noreferrer" aria-label="Odyssey Cloud" style="width:220px;">
+          <span style="display:flex; align-items:center; gap:0.6rem;"><img src="images/sponsors/odysseycloud.svg" alt="" style="height:34px; width:auto;"><span style="font-family:var(--font-head); font-weight:700; font-size:1.05rem; color:#0b1626;">Odyssey Cloud</span></span>
+        </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sponsorship enquiries -->
+    <div style="text-align: center; margin-top: 3.5rem;">
+      <p style="color: var(--text-muted); font-size: 0.975rem; margin-bottom: 1.25rem;">
+        Interested in sponsoring CloudCon Sydney? Reach out to us.
+      </p>
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem;">
+        <a href="tel:+61455198736" class="btn-primary" style="font-size: 1rem; padding: 0.9rem 2rem;">
+          📞 +61 455 198 736
+        </a>
+        <a href="mailto:team@cloudcon.au?subject=CloudCon Sydney 2026 Sponsorship Enquiry" class="btn-outline" style="font-size: 1rem; padding: 0.9rem 2rem;">
+          ✉ team@cloudcon.au
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION: Venue
+     ============================================================ -->
+<section id="venue" class="section section-alt reveal">
+  <div class="container">
+    <p class="section-tag">VENUE</p>
+    <h2 class="section-title">Getting There</h2>
+    <div class="accent-line"></div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; align-items:start;">
+
+      <!-- Left — Map -->
+      <div>
+        <div style="border-radius:14px; overflow:hidden; border:1px solid var(--border);">
+          <iframe width="100%" height="360"
+            src="https://www.openstreetmap.org/export/embed.html?bbox=151.19149804115298%2C-33.87934996210561%2C151.2083423137665%2C-33.87093222232981&layer=mapnik"
+            style="border:none; display:block;"
+            title="ICC Sydney Location" loading="lazy"></iframe>
+        </div>
+        <p style="text-align:center; margin-top:0.75rem;">
+          <a href="https://www.openstreetmap.org/?#map=17/-33.875141/151.199920" target="_blank" rel="noopener noreferrer" style="color:var(--blue-light); font-size:0.875rem;">View larger map →</a>
+        </p>
+      </div>
+
+      <!-- Right — Details -->
+      <div>
+        <!-- Card 1: Venue -->
+        <div class="card" style="padding:1.25rem; margin-bottom:1rem;">
+          <p style="font-family:var(--font-head); font-weight:700; font-size:1.05rem; margin-bottom:0.5rem;">ICC Sydney</p>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.3rem;">📍 14 Darling Dr, Sydney NSW 2000</p>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.75rem;">🏛️ Cockle Bay Room</p>
+          <p style="color:var(--text-dim); font-size:0.85rem; margin:0;">Australia's first fully integrated convention, events, exhibition and entertainment precinct, located in the heart of Darling Harbour.</p>
+        </div>
+
+        <!-- Card 2: Getting There -->
+        <div class="card" style="padding:1.25rem; margin-bottom:1rem;">
+          <p style="font-family:var(--font-head); font-weight:700; font-size:1.05rem; margin-bottom:0.75rem; color:var(--blue-light);">Getting There</p>
+          <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.4rem;">
+            <li style="color:var(--text-muted); font-size:0.875rem;">🚋 Light rail (ICC Sydney stops)</li>
+            <li style="color:var(--text-muted); font-size:0.875rem;">🚆 Train: 10 min walk from Central &amp; Town Hall</li>
+            <li style="color:var(--text-muted); font-size:0.875rem;">⛴️ Ferry: Barangaroo or Pyrmont Bay Wharf</li>
+            <li style="color:var(--text-muted); font-size:0.875rem;">🚌 Bus: routes 389 and 501</li>
+          </ul>
+        </div>
+
+        <!-- Card 3: Accessibility -->
+        <div class="card" style="padding:1.25rem; margin-bottom:1rem;">
+          <p style="font-family:var(--font-head); font-weight:700; font-size:1.05rem; margin-bottom:0.75rem; color:var(--blue-light);">Accessibility</p>
+          <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.4rem;">
+            <li style="color:var(--text-dim); font-size:0.82rem;">✓ Step-free &amp; equitable access to all areas</li>
+            <li style="color:var(--text-dim); font-size:0.82rem;">✓ Wheelchair and ambulant accessible toilets</li>
+            <li style="color:var(--text-dim); font-size:0.82rem;">✓ Ramps and spacious passenger lifts</li>
+            <li style="color:var(--text-dim); font-size:0.82rem;">✓ Braille on room doors and directional signage</li>
+            <li style="color:var(--text-dim); font-size:0.82rem;">✓ Infra-red hearing augmentation systems</li>
+            <li style="color:var(--text-dim); font-size:0.82rem;">✓ Wheelchair hire available · Quiet Rooms · Changing Places</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION: CFP
+     ============================================================ -->
+<section id="cfp" class="section reveal" style="text-align:center;">
+  <div class="container">
+    <p class="section-tag">SPEAK AT CLOUDCON</p>
+    <h2 class="section-title">Call for Papers</h2>
+    <div class="accent-line" style="margin:0.75rem auto 2rem;"></div>
+    <p class="section-lead" style="margin:0 auto 2rem;">CloudCon is community-driven. We welcome practitioners of all experience levels, from deep technical deep-dives to strategic perspectives on cloud adoption. The 2026 call for papers is now closed. Thank you to everyone who submitted.</p>
+
+    <!-- Topic pills 2×2 grid -->
+    <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:0.75rem; max-width:560px; margin:0 auto 2.5rem;">
+      <div style="display:flex; gap:0.625rem; align-items:center; background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:0.875rem 1rem; font-size:0.875rem; color:var(--text-muted);">
+        ⎈ Kubernetes &amp; Cloud Native
+      </div>
+      <div style="display:flex; gap:0.625rem; align-items:center; background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:0.875rem 1rem; font-size:0.875rem; color:var(--text-muted);">
+        🤖 AI &amp; ML Operations
+      </div>
+      <div style="display:flex; gap:0.625rem; align-items:center; background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:0.875rem 1rem; font-size:0.875rem; color:var(--text-muted);">
+        🏗️ Platform Engineering
+      </div>
+      <div style="display:flex; gap:0.625rem; align-items:center; background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:0.875rem 1rem; font-size:0.875rem; color:var(--text-muted);">
+        🔒 Cloud Security
+      </div>
+    </div>
+
+    <span class="btn-primary cfp-closed" aria-disabled="true" title="The 2026 call for papers is closed" style="font-size:1rem; padding:0.875rem 2.5rem;"><s>Submit Your Talk</s>&nbsp;Closed</span>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION: FAQ
+     ============================================================ -->
+<section id="faq" class="section section-alt reveal">
+  <div class="container">
+    <p class="section-tag">FAQ</p>
+    <h2 class="section-title">Frequently Asked Questions</h2>
+    <div class="accent-line"></div>
+
+    <div style="max-width:760px; margin:0 auto;">
+
+      <!-- FAQ 0 -->
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(0)">
+          <span>How much do tickets cost?</span>
+          <span class="faq-icon" id="faq-icon-0">+</span>
+        </button>
+        <div class="faq-answer" id="faq-answer-0">
+          <div class="faq-answer-inner">Tickets are $174.90 AUD ($159 + GST). For group bookings, contact <a href="mailto:team@cloudcon.au" style="color:var(--blue-light)">team@cloudcon.au</a>.</div>
+        </div>
+      </div>
+
+      <!-- FAQ 1 -->
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(1)">
+          <span>When and where is CloudCon Sydney 2026?</span>
+          <span class="faq-icon" id="faq-icon-1">+</span>
+        </button>
+        <div class="faq-answer" id="faq-answer-1">
+          <div class="faq-answer-inner">CloudCon Sydney 2026 is held on 9–10 November 2026 at ICC Sydney, 14 Darling Dr, Sydney NSW 2000. Sessions take place in the Cockle Bay Room.</div>
+        </div>
+      </div>
+
+      <!-- FAQ 2 -->
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(2)">
+          <span>What topics will be covered?</span>
+          <span class="faq-icon" id="faq-icon-2">+</span>
+        </button>
+        <div class="faq-answer" id="faq-answer-2">
+          <div class="faq-answer-inner">CloudCon covers Kubernetes, AI &amp; ML, Platform Engineering, Security, and broader cloud-native topics. Day 1 includes two parallel morning workshops and an afternoon workshop; Day 2 features practitioner talks on a single track.</div>
+        </div>
+      </div>
+
+      <!-- FAQ 3 -->
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(3)">
+          <span>Is there a code of conduct?</span>
+          <span class="faq-icon" id="faq-icon-3">+</span>
+        </button>
+        <div class="faq-answer" id="faq-answer-3">
+          <div class="faq-answer-inner">Yes. CloudCon follows the CNCF Code of Conduct. All attendees, speakers, sponsors, and staff must adhere to it. Read it at <a href="https://www.cncf.io/cncf-code-of-conduct/" target="_blank" rel="noopener noreferrer" style="color:var(--blue-light)">cncf.io/cncf-code-of-conduct</a>.</div>
+        </div>
+      </div>
+
+      <!-- FAQ 4 -->
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(4)">
+          <span>How do I register?</span>
+          <span class="faq-icon" id="faq-icon-4">+</span>
+        </button>
+        <div class="faq-answer" id="faq-answer-4">
+          <div class="faq-answer-inner">Registration is open! <a href="javascript:void(0)" onclick="openRegister()" style="color:var(--blue-light)">Register here</a>, or scan the QR code at the top of this page.</div>
+        </div>
+      </div>
+
+      <!-- FAQ 5 -->
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(5)">
+          <span>How do I get to ICC Sydney?</span>
+          <span class="faq-icon" id="faq-icon-5">+</span>
+        </button>
+        <div class="faq-answer" id="faq-answer-5">
+          <div class="faq-answer-inner">ICC Sydney is accessible by light rail (ICC Sydney stops), train (10-min walk from Central and Town Hall stations), ferry (Barangaroo Wharf or Pyrmont Bay Wharf), or bus (routes 389 and 501).</div>
+        </div>
+      </div>
+
+      <!-- FAQ 6 -->
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(6)">
+          <span>Is the venue accessible?</span>
+          <span class="faq-icon" id="faq-icon-6">+</span>
+        </button>
+        <div class="faq-answer" id="faq-answer-6">
+          <div class="faq-answer-inner">Yes. ICC Sydney provides step-free access to all areas, wheelchair-accessible toilets, ramps and lifts, Braille signage, infra-red hearing augmentation, wheelchair hire, quiet rooms, and a Changing Places facility.</div>
+        </div>
+      </div>
+
+      <!-- FAQ 7 -->
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(7)">
+          <span>Who can I contact for more information?</span>
+          <span class="faq-icon" id="faq-icon-7">+</span>
+        </button>
+        <div class="faq-answer" id="faq-answer-7">
+          <div class="faq-answer-inner">Email the organising team at <a href="mailto:team@cloudcon.au" style="color:var(--blue-light)">team@cloudcon.au</a> or connect on <a href="https://www.linkedin.com/company/cloudnativesydney" target="_blank" rel="noopener noreferrer" style="color:var(--blue-light)">LinkedIn</a>.</div>
+        </div>
+      </div>
+
+      <p style="text-align:center; color:var(--text-dim); margin-top:1.5rem; font-size:0.875rem;">Still have questions? <a href="mailto:team@cloudcon.au" style="color:var(--blue-light);">Email us →</a></p>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer style="background:var(--bg-2); border-top:1px solid var(--border); padding:4rem 1.5rem 2rem;">
+  <div class="container">
+    <div style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:3rem; margin-bottom:2.5rem;" class="footer-grid">
+
+      <!-- Col 1: Brand -->
+      <div>
+        <img src="images/cloudcon_logo.png" alt="CloudCon" style="height:32px; margin-bottom:0.75rem; display:block;">
+        <p style="font-family:var(--font-head); font-weight:700; font-size:1.05rem; margin-bottom:0.5rem;">CloudCon Sydney</p>
+        <p style="color:var(--text-muted); font-size:0.875rem; line-height:1.6; margin-bottom:1rem;">Australia's premier cloud-native conference, organised by KCD Sydney Incorporated.</p>
+        <a href="https://www.linkedin.com/company/cloudnativesydney" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" style="color:var(--text-muted); display:inline-flex; align-items:center; gap:0.4rem; font-size:0.875rem; transition:color 0.2s;" onmouseover="this.style.color='var(--blue-light)'" onmouseout="this.style.color=''">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+      </div>
+
+      <!-- Col 2: Navigation -->
+      <div>
+        <p style="font-family:var(--font-head); font-weight:700; font-size:0.95rem; margin-bottom:1rem;">Navigation</p>
+        <nav>
+          <a href="#about"      style="color:var(--text-muted); font-size:0.875rem; display:block; margin-bottom:0.5rem; transition:color 0.2s;" onmouseover="this.style.color='var(--blue-light)'" onmouseout="this.style.color=''">About</a>
+          <a href="#speakers"   style="color:var(--text-muted); font-size:0.875rem; display:block; margin-bottom:0.5rem; transition:color 0.2s;" onmouseover="this.style.color='var(--blue-light)'" onmouseout="this.style.color=''">Speakers</a>
+          <a href="#schedule"   style="color:var(--text-muted); font-size:0.875rem; display:block; margin-bottom:0.5rem; transition:color 0.2s;" onmouseover="this.style.color='var(--blue-light)'" onmouseout="this.style.color=''">Schedule</a>
+          <a href="#sponsors"   style="color:var(--text-muted); font-size:0.875rem; display:block; margin-bottom:0.5rem; transition:color 0.2s;" onmouseover="this.style.color='var(--blue-light)'" onmouseout="this.style.color=''">Sponsors</a>
+          <a href="#venue"      style="color:var(--text-muted); font-size:0.875rem; display:block; margin-bottom:0.5rem; transition:color 0.2s;" onmouseover="this.style.color='var(--blue-light)'" onmouseout="this.style.color=''">Venue</a>
+          <a href="#cfp"        style="color:var(--text-muted); font-size:0.875rem; display:block; margin-bottom:0.5rem; transition:color 0.2s;" onmouseover="this.style.color='var(--blue-light)'" onmouseout="this.style.color=''">CFP</a>
+          <a href="#faq"        style="color:var(--text-muted); font-size:0.875rem; display:block; margin-bottom:0.5rem; transition:color 0.2s;" onmouseover="this.style.color='var(--blue-light)'" onmouseout="this.style.color=''">FAQ</a>
+        </nav>
+      </div>
+
+      <!-- Col 3: Contact -->
+      <div>
+        <p style="font-family:var(--font-head); font-weight:700; font-size:0.95rem; margin-bottom:1rem;">Contact</p>
+        <a href="tel:+61455198736" style="color:var(--text-muted); font-size:0.875rem; display:block; margin-bottom:0.5rem; transition:color 0.2s;" onmouseover="this.style.color='var(--blue-light)'" onmouseout="this.style.color=''">+61 455 198 736</a>
+        <a href="mailto:team@cloudcon.au" style="color:var(--text-muted); font-size:0.875rem; display:block; margin-bottom:1rem; word-break:break-all; transition:color 0.2s;" onmouseover="this.style.color='var(--blue-light)'" onmouseout="this.style.color=''">team@cloudcon.au</a>
+        <a href="javascript:void(0)" onclick="openRegister()" class="btn-primary" style="font-size:0.85rem; padding:0.5rem 1.1rem;">Register Now →</a>
+      </div>
+
+    </div>
+
+    <!-- Bottom strip -->
+    <div style="border-top:1px solid var(--border); padding-top:1.5rem; display:flex; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+      <p style="color:var(--text-dim); font-size:0.8rem; margin:0;">© 2026 KCD Sydney Incorporated. All rights reserved.</p>
+      <a href="https://www.cncf.io/cncf-code-of-conduct/" target="_blank" rel="noopener noreferrer" style="color:var(--text-dim); font-size:0.8rem;">Code of Conduct</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     MOBILE RESPONSIVE — footer grid + venue grid
+     ============================================================ -->
+<style>
+  @media (max-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 1fr !important;
+    }
+    #venue .container > div[style*="grid-template-columns:1fr 1fr"] {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+/* ============================================================
+   CONFIGURATION — update these values for each event
+   ============================================================ */
+const CFP_SESSIONIZE_URL = "https://sessionize.com/cloudcon-syd-2026/";
+const EVENT_START_DATE   = new Date("2026-11-09T09:00:00+11:00");   // UPDATE for next event (AEDT)
+const REGISTER_URL       = "https://regonsite.eventsair.com/cloudcon-2026/registration/Site/Register";
+
+/* openCFP — opens CFP URL in new tab */
+function openCFP() {
+  window.open(CFP_SESSIONIZE_URL, '_blank', 'noopener,noreferrer');
+}
+
+/* openRegister — opens registration URL in new tab */
+function openRegister() {
+  window.open(REGISTER_URL, '_blank', 'noopener,noreferrer');
+}
+
+
+/* toggleFaq — FAQ accordion */
+function toggleFaq(i) {
+  const answer = document.getElementById('faq-answer-' + i);
+  const icon   = document.getElementById('faq-icon-' + i);
+  const isOpen = answer.classList.contains('open');
+  answer.classList.toggle('open', !isOpen);
+  icon.classList.toggle('open', !isOpen);
+  icon.textContent = isOpen ? '+' : '×';
+}
+
+/* Hamburger menu */
+(function() {
+  const hamburger  = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const iconOpen   = document.getElementById('icon-open');
+  const iconClose  = document.getElementById('icon-close');
+  if (!hamburger) return;
+  hamburger.addEventListener('click', function() {
+    const open = mobileMenu.classList.toggle('open');
+    mobileMenu.style.display = open ? 'flex' : 'none';
+    if (iconOpen)  iconOpen.style.display  = open ? 'none'  : 'block';
+    if (iconClose) iconClose.style.display = open ? 'block' : 'none';
+  });
+  document.querySelectorAll('#mobile-menu a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      mobileMenu.classList.remove('open');
+      mobileMenu.style.display = 'none';
+      if (iconOpen)  iconOpen.style.display  = 'block';
+      if (iconClose) iconClose.style.display = 'none';
+    });
+  });
+})();
+
+/* Countdown timer */
+(function() {
+  function update() {
+    var diff = EVENT_START_DATE - new Date();
+    if (diff <= 0) {
+      var cd = document.getElementById('countdown');
+      var msg = document.getElementById('countdown-message');
+      if (cd)  cd.style.display  = 'none';
+      if (msg) { msg.style.display = 'block'; msg.textContent = 'CloudCon Sydney has taken place. See you next year!'; }
+      return;
+    }
+    var days  = Math.floor(diff / 86400000);
+    var hours = Math.floor((diff % 86400000) / 3600000);
+    var mins  = Math.floor((diff % 3600000)  / 60000);
+    var secs  = Math.floor((diff % 60000)    / 1000);
+    function pad(n) { return String(n).padStart(2, '0'); }
+    var d = document.getElementById('cd-days');
+    var h = document.getElementById('cd-hours');
+    var m = document.getElementById('cd-mins');
+    var s = document.getElementById('cd-secs');
+    if (d) d.textContent = pad(days);
+    if (h) h.textContent = pad(hours);
+    if (m) m.textContent = pad(mins);
+    if (s) s.textContent = pad(secs);
+  }
+  update();
+  setInterval(update, 1000);
+})();
+
+/* Stats count-up animation (triggered by IntersectionObserver) */
+(function() {
+  var animated = false;
+  function animate() {
+    if (animated) return;
+    animated = true;
+    document.querySelectorAll('.stat-num').forEach(function(el) {
+      var target   = parseInt(el.getAttribute('data-target'), 10);
+      var suffix   = el.getAttribute('data-suffix') || '';
+      var start    = performance.now();
+      var duration = 1600;
+      function step(now) {
+        var p = Math.min((now - start) / duration, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.floor(eased * target) + suffix;
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  }
+  var stats = document.getElementById('stats');
+  if (stats && window.IntersectionObserver) {
+    new IntersectionObserver(function(entries) {
+      if (entries[0].isIntersecting) animate();
+    }, { threshold: 0.3 }).observe(stats);
+  } else {
+    animate();
+  }
+})();
+
+/* Scroll reveal (.reveal → .visible) */
+(function() {
+  if (!window.IntersectionObserver) {
+    document.querySelectorAll('.reveal').forEach(function(el) { el.classList.add('visible'); });
+    return;
+  }
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
+})();
+
+/* Active nav link highlighting */
+(function() {
+  var links = document.querySelectorAll('.nav-link[href^="#"]');
+  if (!links.length || !window.IntersectionObserver) return;
+  var sections = Array.from(links).map(function(l) { return document.querySelector(l.getAttribute('href')); }).filter(Boolean);
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        var id = e.target.id;
+        links.forEach(function(l) { l.classList.toggle('active', l.getAttribute('href') === '#' + id); });
+      }
+    });
+  }, { rootMargin: '-50% 0px -45% 0px' });
+  sections.forEach(function(s) { obs.observe(s); });
+})();
+
+/* Sticky register CTA bar — show after scrolling past hero */
+(function() {
+  var cta  = document.getElementById('sticky-cta');
+  var hero = document.getElementById('hero');
+  if (!cta || !hero) return;
+  function check() {
+    var heroBottom = hero.getBoundingClientRect().bottom;
+    var footerEl   = document.querySelector('footer');
+    var nearFooter = footerEl ? footerEl.getBoundingClientRect().top < window.innerHeight + 100 : false;
+    cta.style.display = (heroBottom < 0 && !nearFooter) ? 'block' : 'none';
+  }
+  window.addEventListener('scroll', check, { passive: true });
+  check();
+})();
+
+</script>
+
+<!-- TALK MODAL START -->
+<style>
+  /* ─── Talk Modal ───────────────────────────────────────────────────── */
+  #talk-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(3, 8, 18, 0.8);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    display: none; align-items: center; justify-content: center;
+    padding: 2rem 1.5rem;
+    opacity: 0; transition: opacity 0.18s ease;
+  }
+  #talk-overlay.open { display: flex; opacity: 1; }
+
+  #talk-dialog {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    width: 100%; max-width: 760px;
+    max-height: 88vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+    transform: translateY(12px) scale(0.985);
+    transition: transform 0.18s ease;
+  }
+  #talk-overlay.open #talk-dialog { transform: none; }
+
+  #talk-close {
+    position: absolute; top: 0.9rem; right: 0.9rem;
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border); border-radius: 10px;
+    color: var(--text-muted); cursor: pointer;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  #talk-close:hover { color: var(--text); border-color: var(--blue); background: rgba(0,153,204,0.12); }
+
+  #talk-body { overflow-y: auto; padding: 2rem 2rem 1.5rem; }
+
+  .talk-modal-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap; margin-bottom: 1.1rem; padding-right: 3.25rem;
+  }
+  .talk-modal-heads { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .talk-modal-actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .talk-share-label {
+    font-family: var(--font-head); font-size: 0.7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim);
+    margin-right: 0.1rem;
+  }
+  .talk-share {
+    width: 36px; height: 36px; border-radius: 9px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+    color: var(--text-muted); cursor: pointer; text-decoration: none;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .talk-share:hover { color: #fff; border-color: var(--blue); background: rgba(0,153,204,0.18); }
+  .talk-share svg { width: 17px; height: 17px; }
+
+  .talk-share--x:hover  { background: #000; border-color: #2a2a2a; color: #fff; }
+  .talk-share--fb:hover { background: #1877f2; border-color: #1877f2; color: #fff; }
+
+  /* LinkedIn is the focal point: it is the action that creates something
+     that does not otherwise exist (reach), and the one a speaker comes
+     looking for. Labelled rather than icon-only so the offer is explicit. */
+  .talk-share--li {
+    width: auto; gap: 0.45rem; padding: 0 0.95rem; height: 38px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #0a66c2 0%, #2a85dd 100%);
+    border-color: rgba(42,133,221,0.6);
+    color: #fff; font-family: var(--font-head); font-weight: 700; font-size: 0.8rem;
+    box-shadow: 0 6px 22px rgba(10,102,194,0.42);
+    transition: box-shadow 0.25s ease, transform 0.2s ease, filter 0.2s ease;
+  }
+  .talk-share--li:hover {
+    background: linear-gradient(135deg, #0a66c2 0%, #2a85dd 100%);
+    border-color: rgba(42,133,221,0.8); color: #fff;
+    filter: brightness(1.08); transform: translateY(-1px);
+    box-shadow: 0 0 0 4px rgba(42,133,221,0.18), 0 10px 28px rgba(10,102,194,0.55);
+  }
+  .talk-share--li:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+  /* One-shot entrance: draws the eye to the actions once, then settles.
+     Deliberately not a looping sheen - persistent motion next to body copy
+     competes with reading. */
+  @keyframes cc-actions-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: none; }
+  }
+  .talk-modal-actions { animation: cc-actions-in 260ms ease 120ms both; }
+  #talk-fullpage-top {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-family: var(--font-head); font-size: 0.78rem; font-weight: 600;
+    color: var(--text-dim); text-decoration: none;
+    padding: 0.5rem 0.25rem; white-space: nowrap;
+    transition: color 0.2s ease;
+  }
+  #talk-fullpage-top:hover { color: var(--blue-light); }
+  #talk-fullpage-top:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  #talk-copied {
+    font-size: 0.75rem; color: var(--blue-light); font-weight: 600;
+    opacity: 0; transition: opacity 0.2s;
+  }
+  #talk-copied.show { opacity: 1; }
+  .talk-modal-heads img {
+    width: 84px; height: 84px; object-fit: cover;
+    border-radius: 50%; border: 2px solid var(--border);
+  }
+  #talk-badge {
+    display: inline-block; font-family: var(--font-head);
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--blue-light); background: rgba(0,153,204,0.12);
+    border: 1px solid rgba(0,153,204,0.3); border-radius: 999px;
+    padding: 0.25rem 0.7rem; margin-bottom: 0.8rem;
+  }
+  .talk-modal-timing {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.85rem; color: var(--text-muted); margin: 0 0 0.7rem;
+  }
+  .talk-modal-timing svg { color: var(--blue-light); flex: none; }
+  .talk-modal-timing strong { color: var(--text); font-family: var(--font-head); }
+  #talk-title {
+    font-family: var(--font-head); font-weight: 800; font-size: 1.5rem;
+    line-height: 1.25; color: var(--text); margin: 0 0 0.85rem;
+  }
+  .talk-modal-byline { font-size: 0.85rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 1.5rem; }
+  .talk-modal-byline strong { font-family: var(--font-head); color: var(--blue-light); font-weight: 700; }
+
+  #talk-body h4 {
+    font-family: var(--font-head); font-size: 0.78rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-dim); margin: 1.75rem 0 0.75rem;
+    padding-top: 1.25rem; border-top: 1px solid var(--border);
+  }
+  #talk-body h4:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+  #talk-body p { color: var(--text-muted); line-height: 1.75; margin: 0 0 1rem; font-size: 0.925rem; }
+  #talk-body ul { color: var(--text-muted); line-height: 1.75; margin: 0 0 1rem; padding-left: 1.2rem; font-size: 0.925rem; }
+  #talk-body li { margin-bottom: 0.4rem; }
+  #talk-body strong { color: var(--text); }
+
+  #talk-footer {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: 1rem 2rem; border-top: 1px solid var(--border);
+    background: rgba(255,255,255,0.015);
+    border-radius: 0 0 18px 18px;
+  }
+  .talk-nav-btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: var(--font-head); font-size: 0.82rem; font-weight: 600;
+    color: var(--text-muted); background: transparent;
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 0.5rem 0.9rem; cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .talk-nav-btn:hover { color: var(--blue-light); border-color: var(--blue); }
+  #talk-fullpage { font-size: 0.82rem; color: var(--text-muted); text-decoration: none; white-space: nowrap; }
+  #talk-fullpage:hover { color: var(--blue-light); }
+
+  body.talk-open { overflow: hidden; }
+
+  @media (max-width: 640px) {
+    #talk-overlay { padding: 0; align-items: flex-end; }
+    #talk-dialog {
+      max-width: 100%; max-height: 100%; height: 100%;
+      border-radius: 0; border: none;
+      transform: translateY(100%);
+      transition: transform 0.22s ease;
+    }
+    #talk-overlay.open #talk-dialog { transform: none; }
+    #talk-body { padding: 1.5rem 1.25rem 1rem; }
+    #talk-footer { padding: 0.85rem 1.25rem; }
+    #talk-title { font-size: 1.25rem; }
+    .talk-modal-top { padding-right: 3.25rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #talk-overlay, #talk-dialog { transition: none; }
+    .talk-modal-actions { animation: none; }
+  }
+</style>
+
+<div id="talk-overlay" role="dialog" aria-modal="true" aria-labelledby="talk-title" hidden>
+  <div id="talk-dialog">
+    <button id="talk-close" type="button" aria-label="Close">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/>
+      </svg>
+    </button>
+    <div id="talk-body"></div>
+    <div id="talk-footer">
+      <button class="talk-nav-btn" id="talk-prev" type="button">&lsaquo;&nbsp; Previous</button>
+      <span id="talk-copied">Link copied</span>
+      <button class="talk-nav-btn" id="talk-next" type="button">Next &nbsp;&rsaquo;</button>
+    </div>
+  </div>
+</div>
+
+<script type="application/json" id="talk-data">[{"hash":"building-a-serverless-airplane-tracker","path":"abstracts/2026/LizFongJones/","title":"Building a serverless airplane tracker","badge":"Lightning · 5 min","format":"Lightning Talk (5 mins)","abstract":"<p>I live in Ashfield, under the flightpath of the SYD 34L RICHMOND departure SID. The jets roar directly over my house, but I want to learn about the cool airplanes that are about to come overhead so I can pop outside and planespot, before they're already gone. I built a fully serverless pipeline to notify me of planes via an IoT LED display, and would love to show and tell.</p>","speakers":[{"name":"Liz Fong-Jones","role":"Technical Fellow, Honeycomb.io","img":"images/speakers/headshots/LizFongJones.png","bio":"<p>Liz is a developer advocate, labor and ethics organizer, and Site Reliability Engineer (SRE) with over two decades of experience. She is currently a Technical Fellow at honeycomb.io, and previously was an SRE working on products ranging from the Google Cloud Load Balancer to Google Flights.</p>"}]},{"hash":"who-s-stealing-my-cpu-catching","path":"abstracts/2026/OlgaMirensky/","title":"Who's Stealing My CPU? Catching Noisy Neighbours with eBPF on Kubernetes","badge":"20 min","format":"Full length talk (20 minutes)","abstract":"<p>Your pod's CPU usage looks green. Requests and limits are set correctly, and kubectl top shows nothing alarming. Yet application latency is spiking. The hidden cause? A noisy neighbour sharing the same node is winning scheduling, and standard Kubernetes metrics are completely blind to it.</p><p>Standard metrics track CPU utilisation and throttling, but they cannot measure CPU contention - the delay an application experiences waiting in the kernel run-queue to get CPU time. Building on Netflix's eBPF research into measuring kernel run-queue latency, this talk bridges the gap between raw eBPF code and a practical Kubernetes pattern, complete with monitoring dashboards.</p><p>I'll walk through deploying an eBPF collector via a Kubernetes DaemonSet that aggregates scheduling latency directly inside the kernel with minimal overhead, then export these metrics into Prometheus and explore them on live dashboards.</p><p>You'll leave with an open-source end-to-end pattern you can deploy in your own clusters, along with an understanding of how eBPF opens up visibility into other invisible node-level bottlenecks - from disk I/O queuing to memory contention.</p>","speakers":[{"name":"Olga Mirensky","role":"Senior Staff Site Reliability Engineer, Ping Identity","img":"images/speakers/headshots/OlgaMirensky.png","bio":"<p>Olga is a Senior Staff SRE at Ping Identity with deep roots in Kubernetes, GitOps, FinOps, performance and cloud-native systems. She has spent her career building platforms and developer tooling across large enterprises in tech and financial services industries. When she's not working on side projects or tinkering on her never-ending side projects, or playing with new DGX Spark, she is either running half marathons with friends or camping in the woods.</p>"}]},{"hash":"when-your-circuit-breaker-backfires-outlier","path":"abstracts/2026/MitsuhiroShibuya/","title":"When your circuit breaker backfires — outlier detection in Istio and Envoy","badge":"20 min","format":"Full length talk (20 minutes)","abstract":"<p>We turned on a circuit breaker to make one of our services more reliable. Minutes later it was making things worse, and not only there: errors spread to services that had nothing to do with the change, and traffic kept concentrating onto fewer and fewer pods until they were overwhelmed and crashed. The safety net we had just added had become the problem. Yet nothing was really misconfigured: the setting looked reasonable and passed every automated policy check. What caused the incident was how three things interacted: how the mesh ejects unhealthy pods, how traffic then shifts onto the pods that remain, and what clients do when requests start to fail. Each piece was doing its job; together, they caused a cascade. And the one signal that would have made it obvious was not being collected.</p><p>This talk uses that real incident to show how those pieces interact, and then turns to the practical side: how Istio's outlier detection actually behaves, and why Envoy calls it passive health checking rather than circuit breaking. We will look at the settings that make it dangerous, how to combine it with the right load balancing and a retry budget so it contains a failure instead of spreading it, and how to make it observable. You will leave knowing how to use outlier detection safely, without it causing the very failures it is meant to prevent. For anyone running Istio and Envoy on Kubernetes, with no deep service-mesh knowledge required.</p>","speakers":[{"name":"Mitsuhiro Shibuya","role":"Site Reliability Engineer, Mercari","img":"images/speakers/headshots/MitsuhiroShibuya.png","bio":"<p>Mitsuhiro Shibuya is a Tokyo-based Site Reliability Engineer with nearly a decade of experience dedicated to the art of keeping complex systems running. He began his career as a Backend Engineer with a lasting love for Ruby, and keeps that passion alive through modest contributions to open-source projects. Cat enthusiast.</p>"}]},{"hash":"ai-and-platform-maturity-the-foundations","path":"abstracts/2026/CharlotteFleming/","title":"AI and platform maturity: the foundations that help AI deliver","badge":"Lightning · 5 min","format":"Lightning Talk (5 mins)","abstract":"<p>AI has spread rapidly across development and delivery practices, with the benefits teams report differing widely. The question worth asking is what separates the teams seeing real gains from those left with more noise than value. Drawing on Octopus Deploy's Future of Platform Engineering research report, alongside the broader AI literature, this talk makes the case that the platform foundation beneath AI determines whether it pays off.</p><p>We found that the more mature platforms are also the ones reporting positive AI impact on software delivery speed and stability, organizational performance, and strong positive associations with job satisfaction and leadership direction. This aligns with DORA's finding that AI amplifies existing strengths when added to a well-designed system, compounding its value.</p><p>The more interesting finding is where that impact does and doesn't reach. Teams reporting a positive impact of AI on delivery speed and stability, legacy modernization, and organizational performance are more likely to be high performers (i.e., delivering on goals). But that same benefit did not extend to how work actually feels: reported AI impact showed no comparable improvement in work-life balance or wellbeing (i.e., burnout). Therefore, the gains are landing on delivery and organizational outcomes, but not on the people actually doing the work, which is worth noting.</p><p>The session connects these findings in broader research, providing a clear perspective on where AI investments are actually delivering results.</p><p>Topics include:</p><ul><li>The positive impact of AI on delivery speed and stability, and organizational performance for mature platforms, correlates with platform goal delivery.</li><li>The association between AI impact and higher job satisfaction and leadership direction, but not with well-being or work-life balance.</li></ul>","speakers":[{"name":"Charlotte Fleming","role":"Researcher, Developer Relations, Octopus Deploy","img":"images/speakers/headshots/CharlotteFleming.png","bio":"<p>Charlotte Fleming is a Researcher in Developer Relations at Octopus Deploy, where she leads research into AI adoption, Platform Engineering, and Continuous Delivery practices. With a PhD in Neuroscience, she brings analytical precision to software development research. She authors Octopus Deploy's AI Pulse and Platform Engineering Pulse reports.</p>"}]},{"hash":"the-bot-might-be-your-customer","path":"abstracts/2026/AdamCassarDanielDAlessandro/","title":"The Bot Might Be Your Customer - Rethinking Traffic Management","badge":"20 min","format":"Full length talk (20 minutes)","abstract":"<p>Automated traffic used to be easy to reason about. A person was a customer; a bot was something to block. That model no longer works.</p><p>A search crawler may bring you business. An AI shopping agent may be acting for a real customer. A partner might call your API thousands of times a day. The same application is also dealing with scrapers, credential stuffing, residential proxy networks and bots running full browsers. They can look similar at the edge, but they should not receive the same response.</p><p>This talk is about making that decision. I'll show how route, account outcomes, network fingerprints, bot signals, cache state and recent behaviour can be used to group traffic without pretending they prove identity. We will then decide what to do with it: let it through, slow it down, serve it from cache, move it to an API, challenge it or block it.</p><p>The examples come from operating these controls in production: IP-based limits defeated by address rotation, useful crawlers overwhelming origins, full-page caching absorbing Layer 7 attacks, and policies that reduced cost without treating every unusual client as an attacker.</p><p>Traffic management is no longer a human-versus-bot filter. It is a way to decide what work a request may do and how much of your application it may consume.</p>","speakers":[{"name":"Adam Cassar","role":"Co-Founder & Head of Security Engineering, Peakhour.io","img":"images/speakers/headshots/AdamCassar.png","bio":"<p>Adam Cassar is Co-Founder and Head of Security Engineering at Peakhour. He has spent more than 20 years working in large-scale infrastructure and software development.</p><p>His work focuses on traffic that is difficult to classify and expensive to get wrong: automated clients, residential proxies, abusive APIs, aggressive crawlers and Layer 7 attacks. He builds and operates controls spanning bot management, network fingerprinting, rate limiting, application security, caching and origin protection.</p><p>Adam speaks and writes about the practical trade-offs in these systems, particularly how to control automation without mistaking a technical signal for identity or blocking useful traffic.</p>"},{"name":"Daniel D'Alessandro","role":"Co-Founder & Head of Performance and Delivery, Peakhour.io","img":"images/speakers/headshots/DanielDAlessandro.png","bio":"<p>Daniel is co-founder of Peakhour.io, an Australian CDN and web application security platform. He has more than 25 years' experience across software development, web performance, cloud infrastructure and application security.</p><p>His current focus is bot and traffic management, including browser and network fingerprinting, residential proxy detection, rate limiting and techniques for identifying abusive automated traffic at the edge. He works closely with organisations dealing with the practical impact of bots, from infrastructure cost and performance problems through to credential stuffing, scraping and application abuse.</p>"}]},{"hash":"i-m-behind-seven-proxies-demystifying","path":"abstracts/2026/JacobTaylorVasiliosSyrakis/","title":"I'm Behind Seven Proxies: Demystifying Envoy on Kubernetes","badge":"20 min","format":"Full length talk (20 minutes)","abstract":"<p>Envoy has become one of the most important building blocks in the cloud-native ecosystem. It powers service meshes, API gateways, ingress controllers and countless bespoke networking platforms through the combination of it's rich feature set paired with runtime reconfiguration through xDS. Yet for many engineers, Envoy remains a black box hidden behind projects like Istio or Envoy Gateway.</p><p>This session is designed for Kubernetes practitioners who want to understand Envoy itself. We'll start by building a mental model of Envoy's architecture, explaining the core configuration resources—listeners, filter chains, routes and clusters—and how requests flow through them. From there we'll explore practical features including HTTP connection management, TLS, extension points and the xDS APIs that enable dynamic configuration.</p><p>Armed with those fundamentals, we'll examine how Kubernetes projects such as Istio and Envoy Gateway assemble these primitives into higher-level platforms, before showing how you can build your own Envoy-powered solutions using native Kubernetes concepts.</p><p>We'll finish with two production case studies that demonstrate how these patterns can be applied to solve real networking problems at scale.</p>","speakers":[{"name":"Jacob Taylor","role":"Staff Engineer, Canva","img":"images/speakers/headshots/JacobTaylor.png","bio":"<p>Jake is a senior network engineer at Canva with over 9 years of experience in the field. He currently yells at Bazel a lot and occasionally builds network infrastructure. Previously, having worked at organisations such as NTT, AWS, and Atlassian, he has been exposed to a variety of different networks and codebases. When he's not looking at a computer, you can find him cooking, walking, playing video games, and shooting arrows at targets with his bow.</p>"},{"name":"Vasilios Syrakis","role":"Senior Systems Engineer","img":"images/speakers/headshots/VasiliosSyrakis.png","bio":"<p>You may remember Vasilios from his viral layoff video where he reflected on the edge infrastructure that he built over 8 years at Atlassian. He's worked extensively with Envoy Proxy, built an xDS control-plane from scratch, open-sourced it, and used it to power complex requirements across teams. In recent years he joined the cult of Rust. Outside the 9-5, he occasionally does live-streams and produces tech content. Soon to be a Dad, and uses Neovim BTW.</p>"}]},{"hash":"how-kubernetes-gets-released-a-contributor-s","path":"abstracts/2026/TatianaSelezneva/","title":"How Kubernetes Gets Released: A Contributor’s View from the Release Team","badge":"20 min","format":"Full length talk (20 minutes)","abstract":"<p>We all know how difficult it is to meet deadlines. And yet this large, global, distributed open source community keeps shipping on time. How does it work?</p><p>In this talk, I’ll share what I learned from working on the Kubernetes Release Team in the Release Signal subteam. I’ll walk through how a Kubernetes release moves from planning to shipping, how the Release Signal team helps to understand readiness and risk, and how many different contributors work together to keep releases moving.</p><p>If you use Kubernetes and want to better understand the community behind it, or if you have ever wondered how to start contributing in a meaningful way, this talk will give you a clearer picture of the release process and the paths available to make an impact.</p>","speakers":[{"name":"Tatiana Selezneva","role":"Engineering Manager, REA Group","img":"images/speakers/headshots/TatianaSelezneva.png","bio":"<p>Tatiana is a part of the Platform Engineering team at REA Group, where she focuses on improving developer productivity through the use of Kubernetes orchestration and cloud-native technologies. She is passionate about streamlining development processes and enabling innovation within the tech community.</p>"}]},{"hash":"the-telemetry-trap-building-meaningful-open","path":"abstracts/2026/AnupamPhoghat/","title":"The Telemetry Trap: Building Meaningful Open-Source Observability for Multi-Agent Systems","badge":"20 min","format":"Full length talk (20 minutes)","abstract":"<p>Monitoring traditional microservices is a solved problem. We know how to track CPU, memory, and latency. But how do you monitor the \"reasoning\" of an AI agent? If you can't measure the cost and logic of your GenAI workflows, you are flying blind in production.</p><p>This session explores how to adapt the open-source monitoring tools you already use (like Prometheus and OpenTelemetry) to track the health, infrastructure costs, and hallucination rates of agentic workflows. We will treat LLM calls just like any other microservice dependency, demonstrating how to instrument an AI pipeline, map token usage directly to infrastructure spend, and build dashboards that expose both system health and AI accuracy in real-time. Stop guessing what your agents are doing and start monitoring them like proper engineering assets.</p>","speakers":[{"name":"Anupam Phoghat","role":"Principal, Core-X","img":"images/speakers/headshots/AnupamPhoghat.png","bio":"<p>International speaker with experience speaking at events like Google NEXT in Vegas and I/O connect in China. I am a seasoned IT professional with years of experience in the field. I have extensive experience with Google Cloud Platform (GCP), and currently hold many professional level Google Cloud and other industry certifications. I am also certified in Kubernetes, and have a deep understanding of the core concepts of Kubernetes.</p><p>I am passionate about sharing my knowledge with others by actively participating in GCP community. This also helps me in my own learning and growth in the field.</p>"}]},{"hash":"operators-as-data-why-lifecycle","path":"abstracts/2026/AlexEze/","title":"Operators as Data: Why Lifecycle is Not a Separate Problem","badge":"Lightning · 5 min","format":"Lightning Talk (5 mins)","abstract":"<p>The Operator Lifecycle Manager (OLM) exists because operators were binaries. When the unit of distribution is a binary, lifecycle management—versioning, upgrade, deprecation, deletion—becomes a separate problem that requires a separate system. OLM is that system, but it adds its own controllers, its own CRDs, its own installation lifecycle. The overhead is the necessary cost of the binary constraint.</p><p>This lightning talk introduces a different model: operators as declarative patterns—data. When the operator is data, lifecycle is not an external concern to manage; it is a built-in property of the artifact. The same model that bakes test results into the artifact at publish time (simulation gates + e2e gates, proof in OCI annotations) governs upgrade, deprecation, and deletion. The proof of correctness travels with the artifact. There is no separate lifecycle system to install. You write patterns, and the lifecycle comes with them.</p><p>We'll walk through the full lifecycle: creation (inrun validate), testing (inrun simulate and inrun e2e), distribution (inrun push with gated proof), consumption (inrun inspect and inrun pull), upgrade (versioned imports), deprecation (metadata with migration target), and deletion (declarative deletion protection). The lifecycle is not a process running somewhere; it is a record traveling with the artifact.</p><p>Attendees will leave with a new mental model: when the operator is data, lifecycle is not a separate problem. The same artifact that carries your operator carries its own proof, its own version, and its own deprecation notice. The lifecycle is expressed in the same language as the operator itself.</p><p>This talk will be demonstrated with Inrun, an open-source declarative runtime for Kubernetes behaviour (Apache 2.0), built on a single idea: operator behaviour is different from operator infrastructure. You declare the behaviour; the runtime provides the infrastructure. All examples and code are from https://github.com/intentd/inrun.</p>","speakers":[{"name":"Alex Eze","role":"Infrastructure Developer, NHS","img":"images/speakers/headshots/AlexEze.png","bio":"<p>Alex Eze is the creator of Inrun (formerly Orkestra), an intent runner for Kubernetes. A former clinical pharmacist, an Infrastructure Developer at the NHS.</p><p>He came to Kubernetes operator development through a job interview that revealed a gap in his knowledge — and spent the following years not just closing that gap but rethinking the problem from the ground up.</p><p>Inrun is the result: a runtime built on the idea that Kubernetes reconciliation can be separated from the infrastructure required to run it.</p>"}]},{"hash":"the-day-i-found-out","path":"abstracts/2026/OsamaOkunbo/","title":"The Day I Found Out My Policies Were Off","badge":"20 min","format":"Full length talk (20 minutes)","abstract":"<p>The first time I actually checked which of my admission policies were enforcing, the answer was: not all of them. Namespaces had been excluded that I didn't exclude. Policies I'd set to enforce were sitting in warn only. A webhook config had been deleted and nobody had said anything. The dashboards were green the whole time. I'd been reporting \"enforced\" and enforcing a fraction of it.</p><p>This talk is how that happens, and how I rebuilt it so it stuck.</p><p>It happens because engineers don't hate security, they hate a denied deploy at 2am with a Rego error they can't read. So they take the one-line exit: failurePolicy: Ignore, a namespace exclusion, or deleting the ValidatingWebhookConfiguration outright. If the bypass is cheaper than complying, they bypass. That's not their failure, it's mine — I priced the control wrong, and then I didn't watch whether it stayed on.</p><p>The rebuild had two halves. First, roll out like you mean to keep it: audit mode before anything, so a policy shows me what it would block before it blocks a real deploy; then warn, then enforce, one namespace at a time; exceptions self-service and expiring, because one that never expires is a hole with paperwork on it. Second, and the part I'd missed entirely: instrument the bypasses. A change to a webhook config pages me now. Namespace exclusions get diffed against a baseline. The quiet disable is the one that hurts, so I stopped trusting the dashboard and started watching the exits.</p><p>You'll leave able to check whether your own controls are actually on — most people have never looked — and roll them out so they're still enforcing in six months instead of switched off in six weeks.</p>","speakers":[{"name":"Osama Okunbo","role":"Security Engineer, Immibuddy","img":"images/speakers/headshots/OsamaOkunbo.png","bio":"<p>Osama Okunbo is a Security and Software Engineer who consults with startups and scaleups on cloud-native security, Kubernetes, and compliance. Before working in tech he competed as a professional Judoka and studied Sports Science, eventually transitioning into software engineering through game development before finding his way into cloud security and DevSecOps. He leads security engineering at Immibuddy, a Canadian immigration SaaS platform, and holds consulting clients in fintech and retail. He is the author of Hello Fraud: Why You Feel Like an Impostor in Tech and How to Fix It and holds an MSc in Cybersecurity from the University of Suffolk. He spoke at Manchester Tech Festival 2025 on agentic AI in cybersecurity.</p>"}]},{"hash":"ai-writes-the-code-who-checks-it","path":"abstracts/2026/SponsorPanel/","title":"Sponsor Panel","badge":"Panel · 20 min","format":"Sponsor panel (20 minutes)","abstract":"<p>AI has moved from Kubernetes demos into production clusters, and the hard part now is running it securely and reliably. A quarter of this week's KubeCon North America sessions are about AI inference and agents. In this panel, leaders from Commvault, Chainguard and Nutanix discuss what's actually running in Australian organisations today.</p><p>The discussion covers trust in AI agent skills and the growing software supply-chain attacks on AI tooling. It looks at recovery when exploits arrive in under 30 minutes and whether GitOps really replaces backup. Panellists also cover data sovereignty in multi-region traffic, bare metal versus VMs for GPU workloads, and the open question of agent identity: who, or which agent, took that action?</p><p>Expect practical takeaways you can use on Monday, and a few predictions for what comes next.</p>","speakers":[{"name":"Tirslen Pather","role":"Cloud Resilience Architect, Commvault","img":"images/speakers/headshots/TirslenPather.jpeg","bio":""},{"name":"Andrew Dean","role":"Solutions Architect, Chainguard","img":"images/speakers/headshots/AndrewDean.jpeg","bio":""},{"name":"Woh Shon Phoon","role":"Solutions Architect, Nutanix","img":"images/speakers/headshots/WohShonPhoon.png","bio":""}]},{"hash":"streaming-under-fire","path":"abstracts/2026/MichaelFornaroSamiAlakus/","title":"Streaming Under Fire","badge":"20 min","format":"Full length talk (20 minutes)","abstract":"<p>What's it like to run a platform where something is always on fire? At Kick, live streams are someone's livelihood and live has no undo, no maintenance windows, no second takes, millions watching. At that scale the happy path is a lie; traffic spikes, dependencies fail, deploys go sideways, and someone out there is always trying to knock you over. This is a war-stories talk from the team keeping it online. You'll see how we decide what \"working\" actually means when you can't protect everything equally.</p>","speakers":[{"name":"Michael Fornaro","role":"Staff DevOps Engineer, Easygo","img":"images/speakers/headshots/MichaelFornaro.png","bio":"<p>I'm an OSS enthusiast, I contribute to multiple CNCF projects and co-founded Raspbernetes &amp; K8s@Home. I'm passionate about sharing knowledge, self-development, and inspiring the community about cloud technology's vast potential.</p>"},{"name":"Sami Alakus","role":"Engineering Manager, Easygo","img":"images/speakers/headshots/SamiAlakus.png","bio":"<p>Engineering at Kick. Building resilient platforms and teams at scale.</p>"}]},{"hash":"platform-patterns-for-ai-on-k8s","path":"abstracts/2026/SaurabhMishra/","title":"Platform Patterns for AI on K8s: Admission, Isolation & Observability That Work","badge":"20 min","format":"Full length talk (20 minutes)","abstract":"<p>Saurabh presents proven platform patterns for running AI workloads reliably on Kubernetes, with a focus on admission, isolation, and observability. The session dives into how admission policies enforce GPU quotas and fairness, how tenant isolation prevents noisy-neighbor issues, and how observability patterns make AI jobs debuggable in production. Attendees will see real manifests, admission controllers, and quota strategies that balance utilization and stability. The talk also covers service mesh–based isolation with Istio, OpenTelemetry-driven tracing and metrics, and policy frameworks for safe multi-tenant AI. Lessons learned include preventing GPU starvation, reducing operator toil, and improving user trust in GenAI platforms. The session closes with a practical checklist attendees can adopt immediately, built entirely with CNCF and open source tools.</p>","speakers":[{"name":"Saurabh Mishra","role":"Lead Consultant, Vodafone","img":"images/speakers/headshots/SaurabhMishra.png","bio":"<p>Saurabh Mishra is a Cloud Evangelist (GDE) with a deep passion for cloud architecture, DevOps, and automation. He actively engages with the global tech community, sharing insights on cloud-native technologies, security best practices, and multi-cloud strategies. As an experienced speaker and mentor, Saurabh has delivered sessions at conferences, meetups, and workshops, helping teams accelerate their cloud adoption, modernization and optimization journeys.</p>"}]},{"hash":"argocd-16-000-apps","path":"abstracts/2026/AndrewJeffree/","title":"ArgoCD, 16,000 Apps, One Cluster","badge":"20 min","format":"Full length talk (20 minutes)","abstract":"<p>In 2024, we moved to GitOps with ArgoCD. Production went smoothly; development… less so. Turns out managing 16,000 apps on a single cluster is a bit more than the maintainers likely imagined.</p><p>This talk walks through ArgoCD's scaling assumptions, how they hold up, where they break down, and the workarounds that kept things running. Some of those workarounds were good engineering. Some involved making implementation details load-bearing.</p>","speakers":[{"name":"Andrew Jeffree","role":"Senior Staff Engineer, Mitti","img":"images/speakers/headshots/AndrewJeffree.png","bio":"<p>Andrew is a Senior Staff Platform Engineer at Mitti in Sydney, where he owns GitOps, developer platforms, and the various Kubernetes controllers holding them together. He spends most of his work time on ArgoCD, custom operators, and the kind of platform infrastructure that becomes interesting when it stops working. Outside of work, he spends most of his free time reading, averaging over 50 books a year.</p>"}]},{"hash":"cloud-native-global-load-balancing","path":"abstracts/2026/WohShonPhoon/","title":"Cloud Native Global Load Balancing with K8gb","badge":"20 min","format":"Full length talk (20 minutes)","abstract":"<p>In this session, learn how organisations big and small can provide availability for Kubernetes apps between multiple datacenters, cities and even across the globe!</p><p>k8gb is an open source global load balancer that recently moved from CNCF sandbox to incubating. Its a powerful tool that works seamlessly with kubernetes resources to provide availability for disperse environments.</p>","speakers":[{"name":"Woh Shon Phoon","role":"Solutions Architect, Nutanix","img":"images/speakers/headshots/WohShonPhoon.png","bio":"<p>Woh Shon is a Solutions Architect at Nutanix APJ, focusing on Cloud-Native, AI/ML, and automation. Throughout his career, he has held technical and leadership roles across both enterprise end-user environments and technology product companies. A hands-on practitioner at heart, he bridges high-level design with day-to-day technical realities, focusing on practical implementation and reliable modern architectures.</p>"}]},{"hash":"becoming-a-cncf-contributor","path":"abstracts/2026/WendyHa/","title":"Becoming a CNCF Contributor with 1 Hour a Week","badge":"Lightning · 5 min","format":"Lightning Talk (5 mins)","abstract":"<p>AI is making it easier than ever for anyone to write code, but open source still needs more people willing to help. The biggest challenge today isn’t about technical skills, it’s finding the time to contribute without turning it into another after-hours commitment.</p><p>The CNCF ecosystem has more than 200 projects and countless ways to get involved. As a Kubernetes contributor and contributor to CNCF TAG DevEx, I’ll share a practical approach to help everyone to getting started, even with just one hour a week, less time than you might spend scrolling social media.</p><p>In this lightning talk, you’ll learn how to:</p><ul><li>Find your home among 255 CNCF projects.</li><li>Choose where to contribute based on your skills, interests, and available time.</li><li>Find approachable issues and turn your first contribution into a meaningful PR.</li><li>Use AI effectively without creating AI slop or adding extra work for maintainers.</li><li>Build a sustainable contribution journey that eventually can grow your career.</li></ul><p>The goal isn’t to spending more time to contribute, you just need to start!</p>","speakers":[{"name":"Wendy Ha","role":"Software Engineer, SEEK","img":"images/speakers/headshots/WendyHa.png","bio":"<p>Wendy is a CNCF Ambassador and a proud advocator for Women in the Cloud Native community. She is also an open source contributor and has contributed to various aspects of Kubernetes, including SIG Release (serving on the Release Team since v1.31), SIG Node and SIG Etcd. She has taken on leadership roles as the Release Signal Lead for Kubernetes v1.33 and Release Lead Shadow for v1.34, where she focuses on improving release processes and mentoring new contributors into the open source space.</p>"}]},{"hash":"provenance-for-ai-agent-skills","path":"abstracts/2026/GajanKugamoorthy/","title":"Provenance for AI Agent Skills","badge":"20 min","format":"Full length talk (20 minutes)","abstract":"<p>We have spent a decade learning to secure the software supply chain: signed images, SBOMs, provenance attestations. AI Agents quietly reopened the hole. The SKILL.md, CLAUDE.md, and tool-definition files that drive agent behaviour are just text, they're pulled from public registries, and almost nobody verifies them. Early 2026 made the consequences concrete: Snyk's first audit of the agent-skills ecosystem scanned roughly 4,000 skills and found over a third carried a security flaw, 534 critical, with 76 confirmed-malicious payloads - on a marketplace with no signing, no review, and no sandbox by default.</p><p>In this proposed talk, I will show how to sign agent instructions and reject anything that has been tampered with, before the agent reads a single line. Specifically,  I will walk through treating an agent skill the way we already treat a container image: sign it with Sigstore, and verify provenance at load time so an unsigned or modified skill never executes. Then I will show the defence-in-depth layer - even a correctly signed skill is contained, because signing proves where a skill came from, not that it's safe. To make it concrete I plan to  use nono (open source too from Sigstore's creator, https://github.com/always-further/nono), which already signs CLAUDE.md/SKILL.md with keyless Sigstore and blocks unsigned or tampered instructions at the kernel level.</p><p>As an audience, you will leave knowing how to sign your agents' instruction files and block any tampered or unverified skill before it ever runs - bringing the same supply chain rigour you already apply to container images to the prompts and skills that control your agents.</p>","speakers":[{"name":"Gajan Kugamoorthy","role":"Senior Consultant, Vivanti","img":"images/speakers/headshots/GajanKugamoorthy.png","bio":"<p>As a Senior Consultant at Vivanti, Gajan specialises in cloud infrastructure, security, and cloud data platforms. Most of his recent hands-on work is building enterprise-grade agentic AI platforms and securing them (e.g. AWS Bedrock AgentCore), which is exactly where this talk's threat model lives. He has extensive experience leading large-scale Kubernetes platform modernisation programs for major Australian banks and architecting secure cloud data platforms for health device manufacturers, and is one of only a handful of CNCF Kubestronauts in Australia, as well as a KCD Melbourne organiser.</p><p>His deep technical expertise is built on a foundation of over 7 years at IBM, where he developed cloud native security solutions and contributed to more than 15 patents. Recognised by IBM as an award-winning open-source contributor, Gajan is a key contributor to a diverse range of projects, including OpenSSF's Minder, Red Hat's open-cluster-management.io, and Integrity Shield. This hands-on, real-world experience gives him a practical perspective on building the secure platforms he will discuss in his talk.</p>"}]},{"hash":"building-hybrid-ai-systems-edge","path":"abstracts/2026/ShengChenFrankFan/","title":"Building Hybrid AI Systems: Edge Inferencing Meets Cloud Reasoning","badge":"20 min","format":"Full length talk (20 minutes)","abstract":"<p>Modern AI applications increasingly need to run closer to where data is generated and decisions are made. This session presents an architectural pattern for hybrid AI systems that split latency-sensitive inference at the edge from cloud-native reasoning, connected through a shared memory layer.</p><p>Using a real-world warehouse safety monitoring system as the case study, we examine the trade-offs for placing a Vision Language Model (VLM) on edge GPUs using a hybrid Kubernetes architecture, while delegating summarisation and conversational retrieval to a cloud-based agent runtime.</p><p>We cover the decision framework for what runs where, agentic memory strategies, and cross-environment observability.</p><p>Key takeaways:</p><ul><li>A decision framework for what belongs at the edge vs. the cloud</li><li>Choosing the right models for your edge applications</li><li>Squeezing performance with quantisation, decoding and cold-start optimisation</li><li>Observing GPU and model health across hybrid environments</li><li>Using a shared memory layer to turn edge inference into business insight</li></ul><p>Attendees will leave with practical patterns for building their own hybrid AI systems - from the edge/cloud decision boundary through to agentic memory and cross-environment observability.</p>","speakers":[{"name":"Sheng Chen","role":"Sr. Solutions Architect, AWS","img":"images/speakers/headshots/ShengChen.png","bio":"<p>Sheng Chen is a Sr. Solutions Architect at AWS Australia, bringing over 20 years of experience in IT infrastructure and cloud architecture. In his current role, Sheng helps customers accelerate cloud migrations and infrastructure modernisation by leveraging cloud-native technologies. He specialises in Amazon EKS, AWS hybrid cloud services, platform engineering, HPC and AI infrastructure.</p>"},{"name":"Frank Fan","role":"Principal Container Solution Architect, AWS","img":"images/speakers/headshots/FrankFan.png","bio":"<p>Frank Fan, an AWS Principal Container Solution Architect in Australia, has 20+ years of experience in designing and implementing large-scale technology transformations. He specializes in containerization and driving migration initiatives. He has presented at significant IT events like AWS reInvent, AWS Summit and API days. Frank's youtue channel https://www.youtube.com/@gettocloud5719</p>"}]}]</script>
+<script>
+(function () {
+  var TALKS = JSON.parse(document.getElementById('talk-data').textContent);
+  var byHash = {};
+  TALKS.forEach(function (t, i) { t.index = i; byHash[t.hash] = t; });
+
+  var overlay  = document.getElementById('talk-overlay');
+  var dialog   = document.getElementById('talk-dialog');
+  var body     = document.getElementById('talk-body');
+  var closeBtn = document.getElementById('talk-close');
+  var prevBtn  = document.getElementById('talk-prev');
+  var nextBtn  = document.getElementById('talk-next');
+  var copied   = document.getElementById('talk-copied');
+
+  var ICON = {
+    li:   '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.82-2.05 3.75-2.05 4 0 4.75 2.6 4.75 6V21h-4v-5.5c0-1.3-.03-3-1.85-3-1.85 0-2.13 1.44-2.13 2.9V21H9z"/></svg>',
+    x:    '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 3h3.1l-6.8 7.8L21.8 21h-6.2l-4.9-6.3L5.1 21H2l7.3-8.3L2.5 3h6.3l4.4 5.8zM16.4 19.2h1.7L7.7 4.7H5.9z"/></svg>',
+    fb:   '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg>',
+    link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1-1"/></svg>'
+  };
+
+  var current = null;        // talk currently shown
+  var lastFocus = null;      // element to restore focus to on close
+  var pushedState = false;   // did we add a history entry for this modal?
+
+  // Time comes from the schedule row so the timetable stays the single source.
+  function timingHtml(talk) {
+    var cell = document.querySelector('.timetable-row[data-talk="' + talk.hash + '"] .session-time');
+    if (!cell) return '';
+    var when = cell.textContent.replace(/\s+/g, ' ').trim();
+    return '<div class="talk-modal-timing">' +
+      '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>' +
+      '<span>Tuesday 10 November 2026 &middot; <strong>' + when + '</strong> &middot; Cockle Bay Room</span></div>';
+  }
+
+  function render(talk) {
+    var heads = talk.speakers.map(function (s) {
+      return '<img src="' + s.img + '" alt="' + s.name + '" loading="lazy">';
+    }).join('');
+
+    var byline = talk.speakers.map(function (s) {
+      return '<strong>' + s.name + '</strong> &middot; ' + s.role;
+    }).join('<br>');
+
+    var bios = talk.speakers.map(function (s) {
+      var label = talk.speakers.length === 1 ? 'Speaker Bio' : 'About ' + s.name;
+      return s.bio ? '<h4>' + label + '</h4>' + s.bio : '';
+    }).join('');
+
+    var pageUrl = new URL(talk.path, location.origin + location.pathname).href;
+    var shareText = talk.title + ' — ' +
+      talk.speakers.map(function (s) { return s.name; }).join(' & ') +
+      ' at CloudCon Sydney 2026';
+    var u = encodeURIComponent(pageUrl), t = encodeURIComponent(shareText);
+
+    var actions =
+      '<div class="talk-modal-actions">' +
+        '<a class="talk-share talk-share--li" target="_blank" rel="noopener" aria-label="Share on LinkedIn" ' +
+          'href="https://www.linkedin.com/sharing/share-offsite/?url=' + u + '">' +
+          ICON.li + '<span>Share on LinkedIn</span></a>' +
+        '<a class="talk-share talk-share--x" target="_blank" rel="noopener" aria-label="Share on X" ' +
+          'href="https://twitter.com/intent/tweet?url=' + u + '&text=' + t + '">' + ICON.x + '</a>' +
+        '<a class="talk-share talk-share--fb" target="_blank" rel="noopener" aria-label="Share on Facebook" ' +
+          'href="https://www.facebook.com/sharer/sharer.php?u=' + u + '">' + ICON.fb + '</a>' +
+        '<button class="talk-share" type="button" id="talk-copy" aria-label="Copy link" ' +
+          'data-url="' + pageUrl + '">' + ICON.link + '</button>' +
+        '<a id="talk-fullpage-top" href="' + talk.path + '">Full page &#8599;</a>' +
+      '</div>';
+
+    body.innerHTML =
+      '<div class="talk-modal-top"><div class="talk-modal-heads">' + heads + '</div>' + actions + '</div>' +
+      '<div id="talk-badge">' + talk.badge + '</div>' +
+      timingHtml(talk) +
+      '<h2 id="talk-title">' + talk.title + '</h2>' +
+      '<div class="talk-modal-byline">' + byline + '</div>' +
+      '<h4>Abstract</h4>' + talk.abstract + bios;
+
+    body.scrollTop = 0;
+    current = talk;
+  }
+
+  function open(talk, viaHistory) {
+    if (!talk) return;
+    if (!current) lastFocus = document.activeElement;
+    render(talk);
+    overlay.hidden = false;
+    // next frame so the transition runs
+    requestAnimationFrame(function () { overlay.classList.add('open'); });
+    document.body.classList.add('talk-open');
+    closeBtn.focus();
+
+    if (!viaHistory) {
+      var url = '#talk=' + talk.hash;
+      if (pushedState) { history.replaceState({ talk: talk.hash }, '', url); }
+      else { history.pushState({ talk: talk.hash }, '', url); pushedState = true; }
+    }
+  }
+
+  function close(viaHistory) {
+    if (!current) return;
+    overlay.classList.remove('open');
+    document.body.classList.remove('talk-open');
+    current = null;
+    setTimeout(function () { if (!current) overlay.hidden = true; }, 200);
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+    if (!viaHistory && pushedState) { pushedState = false; history.back(); }
+    else { pushedState = false; }
+  }
+
+  function step(delta) {
+    if (!current) return;
+    open(TALKS[(current.index + delta + TALKS.length) % TALKS.length]);
+  }
+
+  // Cards keep their href, so they still work without JS and stay crawlable.
+  document.addEventListener('click', function (e) {
+    var card = e.target.closest ? e.target.closest('[data-talk]') : null;
+    if (!card) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; // let new-tab through
+    e.preventDefault();
+    open(byHash[card.getAttribute('data-talk')]);
+  });
+
+  body.addEventListener('click', function (e) {
+    var btn = e.target.closest ? e.target.closest('#talk-copy') : null;
+    if (!btn) return;
+    var url = btn.getAttribute('data-url');
+    var done = function () {
+      copied.classList.add('show');
+      setTimeout(function () { copied.classList.remove('show'); }, 1800);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(done, function () {});
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = url; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(); } catch (err) {}
+      document.body.removeChild(ta);
+    }
+  });
+
+  closeBtn.addEventListener('click', function () { close(); });
+  prevBtn.addEventListener('click', function () { step(-1); });
+  nextBtn.addEventListener('click', function () { step(1); });
+
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) close();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (!current) return;
+    if (e.key === 'Escape') { close(); return; }
+    if (e.key === 'ArrowLeft')  { step(-1); return; }
+    if (e.key === 'ArrowRight') { step(1); return; }
+    if (e.key !== 'Tab') return;
+    // focus trap
+    var f = dialog.querySelectorAll('a[href], button, [tabindex]:not([tabindex="-1"])');
+    if (!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+
+  // Back/forward and shared deep links
+  window.addEventListener('popstate', function (e) {
+    var hash = (e.state && e.state.talk) || fromHash();
+    if (hash && byHash[hash]) { open(byHash[hash], true); }
+    else { close(true); }
+  });
+
+  function fromHash() {
+    var m = /(?:^|#|&)talk=([^&]+)/.exec(location.hash);
+    return m ? m[1] : null;
+  }
+
+  var initial = fromHash();
+  if (initial && byHash[initial]) open(byHash[initial], true);
+})();
+</script>
+<!-- TALK MODAL END -->
+<!-- LIVE SCHEDULE START -->
+<style>
+  /* Live schedule: the session on now, the one up next, and earlier sessions
+     today faded back. A slow pulse, never flashing, and none at all for
+     people who ask their device for reduced motion. */
+  .live-now-bar {
+    display: none; gap: 0.6rem 1.5rem; flex-wrap: wrap; align-items: center;
+    margin-top: 1.75rem; padding: 0.85rem 1.1rem;
+    background: rgba(0,153,204,0.08); border: 1px solid rgba(0,153,204,0.35); border-radius: 12px;
+  }
+  .live-now-bar.show { display: flex; }
+  .live-now-bar button {
+    all: unset; cursor: pointer; display: inline-flex; align-items: baseline; gap: 0.5rem;
+    font-size: 0.9rem; color: var(--text); line-height: 1.4;
+  }
+  .live-now-bar button:hover .live-now-title, .live-now-bar button:focus-visible .live-now-title { color: var(--blue-light); text-decoration: underline; }
+  .live-now-bar button:focus-visible { outline: 2px solid var(--blue-light); outline-offset: 3px; border-radius: 4px; }
+  .live-now-label { font-family: var(--font-head); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); white-space: nowrap; }
+  .live-now-title { font-weight: 600; }
+  .live-now-when { color: var(--text-muted); font-size: 0.82rem; white-space: nowrap; }
+
+  .live-badge {
+    display: inline-flex; align-items: center; gap: 0.35rem; margin-left: 0.6rem; vertical-align: 0.1em;
+    font-family: var(--font-head); font-size: 0.62rem; font-weight: 700; font-style: normal;
+    letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap;
+    padding: 0.15rem 0.55rem; border-radius: 999px;
+  }
+  .live-badge--now { color: #fff; background: #dc2626; }
+  .live-badge--next { color: var(--blue-light); border: 1px solid rgba(51,187,238,0.5); }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: live-pulse 2s ease-in-out infinite; }
+  @keyframes live-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  .timetable-row.is-live { background: rgba(0,153,204,0.12); box-shadow: inset 4px 0 0 #dc2626; }
+  .timetable-row.is-live .session-title-cell { color: var(--text); font-style: normal; }
+  .timetable-row.is-past { opacity: 0.5; }
+  .timetable-row.is-past:hover { opacity: 0.85; }
+
+  @media (prefers-reduced-motion: reduce) { .live-dot { animation: none; } }
+</style>
+<script>
+(function () {
+  var schedule = document.getElementById('schedule');
+  if (!schedule) return;
+
+  var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  // Session times are written 12-hour without am/pm and the day runs from
+  // 8:30 to the evening, so an hour before 8 is the afternoon.
+  function toMinutes(h, m) { h = +h; if (h < 8) h += 12; return h * 60 + (+m); }
+  function fmt(mins) {
+    var h = Math.floor(mins / 60), m = mins % 60;
+    var h12 = h > 12 ? h - 12 : h;
+    return h12 + ':' + (m < 10 ? '0' : '') + m + (h >= 12 ? ' pm' : ' am');
+  }
+
+  // "Now" in Sydney, whatever timezone the visitor is in.
+  // ?now=2026-11-09T10:15 overrides it, for previewing the live view.
+  function sydneyNow() {
+    var q = new URLSearchParams(location.search).get('now');
+    var m = q && q.match(/^(\d{4}-\d{2}-\d{2})T(\d{1,2}):(\d{2})/);
+    if (m) return { date: m[1], mins: (+m[2]) * 60 + (+m[3]) };
+    var parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Australia/Sydney', year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
+    }).formatToParts(new Date());
+    var get = function (t) { return parts.filter(function (p) { return p.type === t; })[0].value; };
+    return { date: get('year') + '-' + get('month') + '-' + get('day'), mins: (+get('hour')) * 60 + (+get('minute')) };
+  }
+
+  // Read the days and sessions from the schedule itself.
+  var days = [];
+  schedule.querySelectorAll('.schedule-day-label').forEach(function (label) {
+    var d = label.textContent.match(/(\d{1,2})\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{4})/);
+    if (!d) return;
+    var date = d[3] + '-' + ('0' + (MONTHS.indexOf(d[2]) + 1)).slice(-2) + '-' + ('0' + d[1]).slice(-2);
+    var table = label.nextElementSibling;
+    while (table && !table.classList.contains('timetable')) table = table.nextElementSibling;
+    if (!table) return;
+    var rows = [];
+    table.querySelectorAll('.timetable-row').forEach(function (row) {
+      var t = row.querySelector('.session-time'), title = row.querySelector('.session-title-cell');
+      if (!t || !title) return;
+      var hits = t.textContent.match(/\d{1,2}:\d{2}/g);
+      if (!hits) return;
+      var a = hits[0].split(':'), b = hits[1] && hits[1].split(':');
+      rows.push({
+        el: row, title: title,
+        start: toMinutes(a[0], a[1]),
+        end: b ? toMinutes(b[0], b[1]) : 24 * 60 - 1   // "From 4:15": open-ended, until the end of the day
+      });
+    });
+    if (rows.length) days.push({ date: date, label: label, rows: rows });
+  });
+  if (!days.length) return;
+
+  // The summary bar above the first day.
+  var bar = document.createElement('div');
+  bar.className = 'live-now-bar';
+  bar.setAttribute('role', 'status');
+  bar.setAttribute('aria-live', 'polite');
+  days[0].label.parentNode.insertBefore(bar, days[0].label);
+
+  function badge(kind, text) {
+    var b = document.createElement('span');
+    b.className = 'live-badge live-badge--' + kind;
+    if (kind === 'now') { var dot = document.createElement('span'); dot.className = 'live-dot'; b.appendChild(dot); }
+    b.appendChild(document.createTextNode(text));
+    return b;
+  }
+
+  function jump(row) { row.el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+
+  function item(label, rows, when) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    var l = document.createElement('span'); l.className = 'live-now-label'; l.textContent = label;
+    var t = document.createElement('span'); t.className = 'live-now-title';
+    t.textContent = rows.map(function (r) { return r.title.firstChild ? r.title.firstChild.textContent.trim() : ''; }).join(' \u00b7 ');
+    btn.appendChild(l); btn.appendChild(t);
+    if (when) { var w = document.createElement('span'); w.className = 'live-now-when'; w.textContent = when; btn.appendChild(w); }
+    btn.addEventListener('click', function () { jump(rows[0]); });
+    return btn;
+  }
+
+  function update() {
+    var now = sydneyNow();
+    var live = [], next = [];
+
+    days.forEach(function (day) {
+      day.rows.forEach(function (r) {
+        r.el.classList.remove('is-live', 'is-next', 'is-past');
+        r.title.querySelectorAll('.live-badge').forEach(function (b) { b.remove(); });
+      });
+      if (day.date !== now.date) return;   // only today's sessions change
+      var nextStart = null;
+      day.rows.forEach(function (r) {
+        if (r.end <= now.mins) r.el.classList.add('is-past');
+        else if (r.start <= now.mins) live.push(r);
+        else if (nextStart === null || r.start < nextStart) nextStart = r.start;
+      });
+      day.rows.forEach(function (r) { if (nextStart !== null && r.start === nextStart) next.push(r); });
+    });
+
+    live.forEach(function (r) { r.el.classList.add('is-live'); r.title.appendChild(badge('now', 'Live now')); });
+    next.forEach(function (r) { r.el.classList.add('is-next'); r.title.appendChild(badge('next', 'Up next')); });
+
+    bar.textContent = '';
+    if (live.length) bar.appendChild(item('Live now', live, live[0].end < 24 * 60 - 1 ? 'until ' + fmt(live[0].end) : ''));
+    if (next.length) bar.appendChild(item('Up next', next, 'at ' + fmt(next[0].start)));
+    bar.classList.toggle('show', live.length > 0 || next.length > 0);
+    current = live[0] || next[0] || null;
+  }
+
+  var current = null;
+  window.ccScrollToNow = function () {
+    if (current) current.el.scrollIntoView({ behavior: 'instant', block: 'center' });
+  };
+
+  update();
+  setInterval(update, 30000);
+})();
+</script>
+<!-- LIVE SCHEDULE END -->
+</body>
+</html>
